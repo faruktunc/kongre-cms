@@ -1,0 +1,935 @@
+{
+    "menus": {
+        "links": [
+            {
+                "id": 1,
+                "name": "Kongremiz",
+                "slug": "kongremiz",
+                "url": "/",
+                "show": true,
+                "parentId": 0,
+                "order": 10,
+                "isActive": true
+            },
+            {
+                "id": 2,
+                "name": "Konuşmacılar",
+                "slug": "konusmacilar",
+                "url": "/speakers",
+                "show": true,
+                "parentId": 0,
+                "order": 20,
+                "isActive": true
+            },
+            {
+                "id": 3,
+                "name": "Kongre Takvimi",
+                "slug": "kongre-takvimi",
+                "url": "/kongre-takvimi",
+                "show": true,
+                "parentId": 0,
+                "order": 30,
+                "content": [
+                    {
+                        "type": "heading",
+                        "value": "Kongre Takvimi"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Etkinlik programı ve takvimi"
+                    },
+                    {
+                        "type": "table",
+                        "headers": ["Tarih", "Etkinlik", "Saat"],
+                        "rows": [
+                            ["15.01.2026", "Kayıt", "08:00"],
+                            ["15.01.2026", "Açılış", "09:00"],
+                            ["16.01.2026", "Workshop", "10:00"]
+                        ]
+                    }
+                ],
+                "isActive": true
+            },
+            {
+                "id": 4,
+                "name": "Kurullar",
+                "slug": "kurullar",
+                "url": "/boards",
+                "show": true,
+                "parentId": 0,
+                "order": 40,
+                "isActive": true
+            },
+            {
+                "id": 5,
+                "name": "Yayın Bilgileri",
+                "slug": "yayin-bilgileri",
+                "url": "/yayin-bilgileri",
+                "show": true,
+                "parentId": 0,
+                "order": 50,
+                "isActive": true
+            },
+            {
+                "id": 6,
+                "name": "VI. USBK Özet Bildiler Kitabı",
+                "slug": "VI. usbk-ozet-bildiriler-kitabi",
+                "url": "/pdf",
+                "show": true,
+                "parentId": 5,
+                "order": 60,
+                "isActive": true
+            },
+            {
+                "id": 7,
+                "name": "Bildirilerin Yayınlanması",
+                "slug": "bildirilerin-yayinlanmasi",
+                "url": "/info",
+                "show": true,
+                "parentId": 5,
+                "order": 70,
+                "isActive": true
+            },
+            {
+                "id": 8,
+                "name": "Çalıştaylar",
+                "slug": "calistaylar",
+                "url": "/calistaylar",
+                "show": true,
+                "parentId": 0,
+                "order": 80,
+                "content": [
+                    {
+                        "type": "heading",
+                        "value": "Çalıştaylar"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Kongre kapsamında düzenlenecek çalıştaylar"
+                    },
+                    {
+                        "type": "table",
+                        "headers": ["Tarih", "Çalıştay", "Yer"],
+                        "rows": [
+                            ["15.01.2026", "Kemometri", "Salon A"],
+                            ["16.01.2026", "İstatistik", "Salon B"]
+                        ]
+                    }
+                ],
+                "isActive": true
+            },
+            {
+                "id": 9,
+                "name": "Kemometri Çalıştayı",
+                "slug": "kemometri-calistayi",
+                "url": "/kemometri-calistayi",
+                "show": true,
+                "parentId": 8,
+                "order": 10,
+                "content": [
+                    {
+                        "type": "heading",
+                        "value": "Kemometri Çalıştayı"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Kemometri yöntemleri ve uygulamaları"
+                    }
+                ],
+                "isActive": true
+            },
+            {
+                "id": 10,
+                "name": "Sektör Konuşuyor",
+                "slug": "sektor-konusuyor",
+                "url": "/sektor-konusuyor",
+                "show": true,
+                "parentId": 8,
+                "order": 11,
+                "content": [
+                    {
+                        "type": "heading",
+                        "value": "Kongre Takvimi ve Etkinlik Programı"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "VI. Uluslararası Sosyal Bilimler Kongresi 15-18 Ocak 2026 tarihleri arasında Gümüşhane Üniversitesi Kongre Merkezinde gerçekleştirilecektir. Aşağıda etkinliğin detaylı takvimi ve program bilgileri yer almaktadır."
+                    },
+                    {
+                        "type": "subheading",
+                        "value": "İlk Gün Programı - 15 Ocak 2026"
+                    },
+                    {
+                        "type": "table",
+                        "headers": ["Saat", "Etkinlik", "Yer", "Moderatör"],
+                        "rows": [
+                            ["08:00 - 09:00", "Kayıt", "Giriş Salonu", "-"],
+                            [
+                                "09:00 - 10:30",
+                                "Açılış Töreni",
+                                "Ana Salon",
+                                "Prof. Dr. Halil İbrahim ZEYBEK"
+                            ],
+                            ["10:30 - 11:00", "Kahve Arası", "Fuaye", "-"],
+                            [
+                                "11:00 - 12:30",
+                                "Yapay Zeka ve Gelecek",
+                                "Salon A",
+                                "Dr. İbrahim Yılmaz"
+                            ],
+                            ["12:30 - 14:00", "Öğle Yemeği", "Restaurant", "-"],
+                            [
+                                "14:00 - 16:00",
+                                "Blockchain ve Web3",
+                                "Salon B",
+                                "Can Özdemir"
+                            ]
+                        ]
+                    },
+                    {
+                        "type": "list",
+                        "items": [
+                            "Tüm katılımcılara kongre kitabı ve belgeleri verilecektir",
+                            "Açılış törenine VIP davetliler özel alandan katılacaktır",
+                            "Networking fırsatı için ek salon açılmıştır",
+                            "Tüm oturumlar Türkçe ve İngilizce simultan tercüme ile yapılacaktır",
+                            "Katılımcılara sertifikat ve belgeler sunulacaktır"
+                        ]
+                    },
+                    {
+                        "type": "image",
+                        "src": "/assets/images/congress-venue.jpg",
+                        "alt": "Gümüşhane Üniversitesi Kongre Merkezi",
+                        "caption": "Kongre merkezi, modern tesisler ve uygun ortamı ile katılımcıları ağırlayacaktır"
+                    },
+                    {
+                        "type": "divider"
+                    },
+                    {
+                        "type": "subheading",
+                        "value": "Atölye Çalışmaları"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Kongre kapsamında katılımcılara özel atölye çalışmaları sunulmaktadır. Bu atölyelerde praktik beceriler kazanabilir, uzmanlardan doğrudan danışmanlık alabilirsiniz."
+                    },
+                    {
+                        "type": "list",
+                        "items": [
+                            "Kemometri ve İstatistik Yöntemleri",
+                            "Analitik Cihazları ve Uygulamaları",
+                            "Veri Analizi ve Raporlama",
+                            "Kalite Kontrol Sistemleri",
+                            "Uluslararası Standartlar"
+                        ]
+                    },
+                    {
+                        "type": "html",
+                        "value": "<div style='padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white;'><h3 style='margin-top: 0;'>Duyuru</h3><p>Kongre öncesi hazırlık webinarları her salı saat 16:00'da canlı yayında gerçekleşecektir. <strong>Tüm katılımcılar katılabilir.</strong></p><p><a href='#' style='color: #ffd700; text-decoration: none; font-weight: bold;'>Webinar Kayıt Sayfası →</a></p></div>"
+                    },
+                    {
+                        "type": "alert",
+                        "severity": "warning",
+                        "title": "Önemli Tarih",
+                        "value": "Bildiri özeti gönderimi için son tarih 30 Aralık 2025'tir. Bu tarihten sonra gönderilen başvurular kabul edilmeyecektir."
+                    },
+                    {
+                        "type": "alert",
+                        "severity": "success",
+                        "title": "Başvuru Onaylandı",
+                        "value": "Bildiriniz başarıyla sisteme kaydedilmiştir. Onay e-postası kısa süre içinde gönderilecektir."
+                    },
+                    {
+                        "type": "alert",
+                        "severity": "error",
+                        "title": "Hata Oluştu",
+                        "value": "Dosya yükleme sırasında bir hata meydana geldi. Lütfen daha sonra tekrar deneyiniz."
+                    },
+                    {
+                        "type": "alert",
+                        "severity": "info",
+                        "title": "Bilgi",
+                        "value": "Erken kayıt indiriminden faydalanmak için bugün kayıt yapınız. %20 indirim uygulanacaktır."
+                    },
+                    {
+                        "type": "divider"
+                    },
+                    {
+                        "type": "subheading",
+                        "value": "Konaklama ve Ulaşım"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Gümüşhane'ye ulaşım için çeşitli seçenekler bulunmaktadır. Havayolu, demiryolu ve karayolu ulaşımı mövcuttur. Kongre için özel konaklama anlaşmaları sağlanmıştır."
+                    },
+                    {
+                        "type": "table",
+                        "headers": [
+                            "Otel",
+                            "Yıldız",
+                            "Uzaklık",
+                            "Fiyat Aralığı"
+                        ],
+                        "rows": [
+                            [
+                                "Grand Hotel Gümüşhane",
+                                "5★",
+                                "2 km",
+                                "450-650 TL"
+                            ],
+                            ["Hilton Garden Inn", "4★", "3 km", "350-550 TL"],
+                            [
+                                "Business Plaza Hotel",
+                                "3★",
+                                "1.5 km",
+                                "250-350 TL"
+                            ],
+                            ["Konfort Hotel", "3★", "2.5 km", "200-300 TL"]
+                        ]
+                    },
+                    {
+                        "type": "image",
+                        "src": "/assets/images/accommodation.jpg",
+                        "alt": "Konaklama Seçenekleri",
+                        "caption": "Gümüşhane'deki kaliteli otel imkânları"
+                    },
+                    {
+                        "type": "divider"
+                    },
+                    {
+                        "type": "subheading",
+                        "value": "Sıkça Sorulan Sorular"
+                    },
+                    {
+                        "type": "list",
+                        "items": [
+                            "Kongre katılım ücretine ne dahildir? → Tüm oturumlar, atölye çalışmaları, materyaller, kahvaltı ve öğle yemeği dahildir",
+                            "Bildirim sunabilir miyim? → Evet, akademik standartları karşılayan tüm araştırmalar kabul edilir",
+                            "Sertifikat verilir mi? → Evet, tüm katılımcılara katılım sertifikası verilecektir",
+                            "Kongreyi çevrimiçi izleyebilir miyim? → Evet, bazı oturumlar canlı yayınlanacaktır",
+                            "Grup indirimi var mı? → Evet, 5+ kişi gruplar için %15 indirim uygulanır"
+                        ]
+                    },
+                    {
+                        "type": "alert",
+                        "severity": "success",
+                        "title": "Kaydınız Tamamlandı!",
+                        "value": "Kongre kaydınız başarıyla tamamlanmıştır. Detaylı bilgiler e-postanıza gönderilmiştir. Gümüşhane'de görüşmek üzere..."
+                    }
+                ],
+                "isActive": true
+            },
+            {
+                "id": 11,
+                "name": "Kayıt ve Konaklama",
+                "slug": "kayit-ve-konaklama",
+                "url": "/kayit-ve-konaklama",
+                "show": true,
+                "parentId": 0,
+                "order": 90,
+                "content": [
+                    {
+                        "type": "heading",
+                        "value": "Kayıt ve Konaklama"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Kongre kayıtı ve konaklama bilgileri"
+                    }
+                ],
+                "isActive": true
+            },
+            {
+                "id": 12,
+                "name": "Kayıt",
+                "slug": "kayit",
+                "url": "/kayit",
+                "show": true,
+                "parentId": 11,
+                "order": 10,
+                "content": [
+                    {
+                        "type": "heading",
+                        "value": "Kayıt"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Kongre kaydı için gerekli bilgiler"
+                    }
+                ],
+                "isActive": true
+            },
+            {
+                "id": 13,
+                "name": "Konaklama",
+                "slug": "konaklama",
+                "url": "/konaklama",
+                "show": true,
+                "parentId": 11,
+                "order": 11,
+                "content": [
+                    {
+                        "type": "heading",
+                        "value": "Konaklama"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Konaklama seçenekleri ve rezervasyon"
+                    }
+                ],
+                "isActive": true
+            },
+            {
+                "id": 14,
+                "name": "Bilimsel Program",
+                "slug": "bilimsel-program",
+                "url": "/bilimsel-program",
+                "show": true,
+                "parentId": 0,
+                "order": 100,
+                "content": [
+                    {
+                        "type": "heading",
+                        "value": "Bilimsel Program"
+                    },
+                    {
+                        "type": "paragraph",
+                        "value": "Detaylı bilimsel program"
+                    }
+                ],
+                "isActive": true
+            },
+            {
+                "id": 15,
+                "name": "İletişim",
+                "slug": "iletisim",
+                "url": "/contact",
+                "show": true,
+                "parentId": 0,
+                "order": 180,
+                "isActive": true
+            }
+        ],
+        "socials": [
+            {
+                "id": 1,
+                "platform": "facebook",
+                "url": "https://facebook.com",
+                "order": 10,
+                "isActive": true
+            },
+            {
+                "id": 2,
+                "platform": "instagram",
+                "url": "https://www.instagram.com/bilal.gksn/",
+                "order": 20,
+                "isActive": true
+            },
+            {
+                "id": 3,
+                "platform": "x",
+                "url": "https://x.com/KHPRRNG",
+                "order": 30,
+                "isActive": true
+            },
+            {
+                "id": 4,
+                "platform": "linkedin",
+                "url": "https://www.linkedin.com/in/bilal-g%C3%B6k%C5%9Fen-8bb6b8225/",
+                "order": 40,
+                "isActive": true
+            },
+            {
+                "id": 5,
+                "platform": "youtube",
+                "url": "https://www.youtube.com/",
+                "order": 50,
+                "isActive": true
+            },
+            {
+                "id": 6,
+                "platform": "github",
+                "url": "https://github.com/Bilalng",
+                "order": 60,
+                "isActive": true
+            }
+        ]
+    },
+
+    "logo": {
+        "src": "/assets/images/logo.png",
+        "alt": "Site Logosu"
+    },
+
+    "homeComponent": [
+        {
+            "id": 1,
+            "component": "SliderSection",
+            "order": 10,
+            "isActive": true
+        },
+        {
+            "id": 2,
+            "component": "ProgramSection",
+            "order": 20,
+            "isActive": true
+        },
+        {
+            "id": 3,
+            "component": "SponsorsSection",
+            "order": 40,
+            "isActive": true
+        },
+        {
+            "id": 4,
+            "component": "AboutConference",
+            "order": 30,
+            "isActive": true
+        }
+    ],
+
+    "speakersComponent": [
+        {
+            "id": 1,
+            "component": "AboutSpeakers",
+            "order": 10,
+            "isActive": true
+        }
+    ],
+
+    "contactComponent": [
+        {
+            "id": 1,
+            "component": "contactSection",
+            "order": 10,
+            "isActive": true
+        }
+    ],
+
+    "boardsComponent": [
+        {
+            "id": 1,
+            "component": "BoardSection",
+            "order": 10,
+            "isActive": true
+        }
+    ],
+
+    "pdfComponent": [
+        {
+            "id": 1,
+            "component": "pdfSection",
+            "order": 10,
+            "isActive": true
+        }
+    ],
+
+    "infoPDFComponent": [
+        {
+            "id": 1,
+            "component": "infoPdfSection",
+            "order": 10,
+            "isActive": true
+        }
+    ],
+
+    "events": {
+        "id": 1,
+        "title": "12. Ulusal Analitik Kimya Kongresi",
+        "description": "Geleceğin teknolojilerini keşfedin, sektör liderlerinden ilham alın",
+        "date": "2026-01-15",
+        "end_date": "2026-01-18",
+        "location": "Gümüşhane, Türkiye",
+        "images": [
+            "assets/images/slider/img1.jpg",
+            "assets/images/slider/img2.jpg",
+            "assets/images/slider/img3.jpg"
+        ],
+        "highlight_words": ["Analitik"],
+        "sessions": [
+            {
+                "id": 101,
+                "title": "Yapay Zeka ve Gelecek",
+                "description": "AI teknolojilerinin geleceği",
+                "date": "2026-01-15",
+                "start_time": "09:00",
+                "end_time": "10:30",
+                "speakers": [1, 3]
+            },
+            {
+                "id": 102,
+                "title": "Blockchain ve Web3",
+                "description": "Merkeziyetsiz sistemler",
+                "date": "2026-01-15",
+                "start_time": "11:00",
+                "end_time": "12:30",
+                "speakers": [4]
+            },
+            {
+                "id": 103,
+                "title": "Makine Öğrenmesi Workshop",
+                "description": "Uygulamalı ML eğitimi",
+                "date": "2026-01-16",
+                "start_time": "09:00",
+                "end_time": "12:00",
+                "speakers": [1, 2]
+            },
+            {
+                "id": 104,
+                "title": "Startup Ekosistemi Paneli",
+                "description": "Girişimcilik ve yatırım",
+                "date": "2026-01-16",
+                "start_time": "14:00",
+                "end_time": "16:00",
+                "speakers": [2]
+            },
+            {
+                "id": 105,
+                "title": "Derin Öğrenme Oturumu",
+                "description": "Görsel modeller ve uygulamalar",
+                "date": "2026-01-17",
+                "start_time": "09:30",
+                "end_time": "11:00",
+                "speakers": [3]
+            },
+            {
+                "id": 106,
+                "title": "IoT ve Endüstri 4.0",
+                "description": "Akıllı sistemler",
+                "date": "2026-01-17",
+                "start_time": "13:00",
+                "end_time": "15:00",
+                "speakers": [4, 1]
+            },
+            {
+                "id": 107,
+                "title": "Kapanış Konuşması",
+                "description": "Geleceğe bakış",
+                "date": "2026-01-18",
+                "start_time": "10:00",
+                "end_time": "11:30",
+                "speakers": [1, 2, 3, 4]
+            }
+        ],
+        "sponsors": [1, 2, 3, 4]
+    },
+    "speakers": [
+        {
+            "id": 1,
+            "name": "Dr. İbrahim Yılmaz",
+            "title": "Yapay Zeka Uzmanı",
+            "company": "Tech Innovations",
+            "photo": "/assets/images/speakers1.jpg",
+            "bio": "15 yıllık AI ve makine öğrenmesi deneyimi",
+            "expertise": ["AI", "Machine Learning", "Deep Learning"],
+            "isActive" : true
+        },
+        {
+            "id": 2,
+            "name": "Mehmet Demir",
+            "title": "CEO & Kurucu",
+            "company": "StartupHub",
+            "photo": "/assets/images/speakers2.jpg",
+            "bio": "Başarılı girişimci ve yatırımcı",
+            "expertise": ["Girişimcilik", "İnovasyon", "Strateji"],
+            "isActive" : true
+        },
+        {
+            "id": 3,
+            "name": "Prof. Zeynep Kaya",
+            "title": "Teknoloji Profesörü",
+            "company": "İTÜ",
+            "photo": "/assets/images/speakers3.jpg",
+            "bio": "Akademisyen ve teknoloji danışmanı",
+            "expertise": ["İnovasyon", "Araştırma", "Eğitim"],
+            "isActive" : true
+        },
+        {
+            "id": 4,
+            "name": "Can Özdemir",
+            "title": "CTO",
+            "company": "Digital Solutions",
+            "photo": "/assets/images/speakers4.jpg",
+            "bio": "Blockchain ve kripto teknolojileri uzmanı",
+            "expertise": ["Blockchain", "Web3", "Cryptocurrency"],
+            "isActive" : true
+        }
+    ],
+    "sponsors": [
+        {
+            "id": 1,
+            "name": "TechCorp",
+            "order": 10,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test1.png",
+            "isActive" : true
+        },
+        {
+            "id": 2,
+            "name": "InnovateCo",
+            "order": 20,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test2.png",
+            "isActive" : true
+        },
+        {
+            "id": 3,
+            "name": "FutureTech",
+            "order": 30,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test3.png",
+            "isActive" : true
+        },
+        {
+            "id": 4,
+            "name": "DigiSolutions",
+            "order": 40,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test4.png",
+            "isActive" : true
+        },
+        {
+            "id": 5,
+            "name": "NextGenSoft",
+            "order": 50,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test5.png",
+            "isActive" : true
+        },
+        {
+            "id": 6,
+            "name": "CyberWave",
+            "order": 60,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test6.png",
+            "isActive" : true
+        },
+        {
+            "id": 7,
+            "name": "AlphaSystems",
+            "order": 70,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test7.png",
+            "isActive" : true
+        },
+        {
+            "id": 8,
+            "name": "CodeSphere",
+            "order": 80,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test8.png",
+            "isActive" : true
+        },
+        {
+            "id": 9,
+            "name": "Cloudify",
+            "order": 90,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test9.png",
+            "isActive" : true
+        },
+        {
+            "id": 10,
+            "name": "DataPulse",
+            "order": 100,
+            "show": true,
+            "imgsrc": "assets/images/sponsors/test10.png",
+            "isActive" : true
+        }
+    ],
+
+    "contact": [
+        {
+            "icon": "Mail",
+            "title": "E-posta",
+            "value": "2024usbk@gmail.com",
+            "link": "mailto:info@eventhub.com"
+        },
+        {
+            "icon": "Phone",
+            "title": "Telefon",
+            "value": "+90 (555) 123 45 67",
+            "link": "tel:+905551234567"
+        },
+        {
+            "icon": "MapPin",
+            "title": "Adres",
+            "value": "Gümüşhane Üniversitesi Kongre Merkezi, Gümüşhanevî Kampüsü, Bağlarbaşı Mahallesi Merkez/ Gümüşhane/ Türkiye 29100",
+            "link": "#"
+        },
+        {
+            "icon": "Clock",
+            "title": "Çalışma Saatleri",
+            "value": "Pzt-Cum: 09:00 - 18:00",
+            "link": "#"
+        },
+        {
+            "icon": "Academic",
+            "title": "Akademik İletişim",
+            "members": [
+                {
+                    "name": "Arş.Gör. Gürsan CİVELEK",
+                    "title": "Gümüşhane Üniversitesi",
+                    "email": "g.civelek@gumushane.edu.tr",
+                    "photo": "/images/team/gursan.jpg"
+                },
+                {
+                    "name": "Arş.Gör. Mahmut S. KÜÇÜK",
+                    "title": "Gümüşhane Üniversitesi",
+                    "email": "mahmutskucuk@gumushane.edu.tr",
+                    "photo": "/images/team/mahmut.jpg"
+                },
+                {
+                    "name": "Arş.Gör. H. Furkan MACAN",
+                    "title": "Gümüşhane Üniversitesi",
+                    "email": "huseyinfurkan.macan@gumushane.edu.tr",
+                    "photo": "/images/team/furkan.jpg"
+                },
+                {
+                    "name": "Arş.Gör. Burak SEYHAN",
+                    "title": "Gümüşhane Üniversitesi",
+                    "email": "burakseyhan@gumushane.edu.tr",
+                    "photo": "/images/team/burak.jpg"
+                },
+                {
+                    "name": "Arş.Gör. Esra AKTAŞ",
+                    "title": "Gümüşhane Üniversitesi",
+                    "email": "esra.aktas@gumushane.edu.tr",
+                    "photo": "/images/team/esra.jpg"
+                },
+                {
+                    "name": "Arş.Gör. Zeynep ŞİMŞEK BİNGÖL",
+                    "title": "Gümüşhane Üniversitesi",
+                    "email": "zeynepsimsek@gumushane.edu.tr",
+                    "photo": "/images/team/zeynep.jpg"
+                }
+            ]
+        }
+    ],
+
+    "boards": [
+        {
+            "id": 1,
+            "name": "Onur Kurulu",
+            "members": [
+                {
+                    "name": "Prof.Dr. Mustafa Doğan KARACOŞKUN",
+                    "title": "Kilis 7 Aralık Üniversitesi Rektörü"
+                },
+                {
+                    "name": "Prof.Dr. Mutlu TÜRKMEN",
+                    "title": "Bayburt Üniversitesi Rektörü"
+                },
+                {
+                    "name": "Prof.Dr. Ahmet YILDIRIM",
+                    "title": "Uluslararası Saraybosna Üniversitesi (IUS) Rektörü"
+                },
+                {
+                    "name": "Prof.Dr. Fatih YILMAZ",
+                    "title": "Tokat Gaziosmanpaşa Üniversitesi Rektörü"
+                },
+                {
+                    "name": "Prof.Dr. Halil İbrahim ZEYBEK",
+                    "title": "Gümüşhane Üniversitesi Rektörü"
+                }
+            ],
+            "isActive" : true
+        },
+        {
+            "id": 2,
+            "name": "Düzenleme Kurulu",
+            "members": [
+                {
+                    "name": "Prof.Dr. Ahmet YILMAZ",
+                    "title": "Organizasyon Komitesi Başkanı"
+                },
+                {
+                    "name": "Doç.Dr. Mehmet KAYA",
+                    "title": "Teknik Koordinatör"
+                },
+                {
+                    "name": "Dr. Öğr. Üyesi Ayşe DEMİR",
+                    "title": "İletişim Sorumlusu"
+                },
+                {
+                    "name": "Arş.Gör. Fatma ÇELİK",
+                    "title": "Lojistik Koordinatörü"
+                }
+            ],
+            "isActive" : true
+        },
+        {
+            "id": 3,
+            "name": "Bilim Kurulu",
+            "members": [
+                {
+                    "name": "Prof.Dr. Can ÖZKAN",
+                    "title": "Bilim Kurulu Başkanı"
+                },
+                {
+                    "name": "Prof.Dr. Zeynep ARSLAN",
+                    "title": "Bilim Kurulu Üyesi"
+                },
+                { "name": "Doç.Dr. Ali VURAL", "title": "Bilim Kurulu Üyesi" },
+                { "name": "Doç.Dr. Elif KURT", "title": "Bilim Kurulu Üyesi" },
+                {
+                    "name": "Dr. Öğr. Üyesi Burak ŞAHIN",
+                    "title": "Bilim Kurulu Sekreteri"
+                }
+            ],
+            "isActive" : true
+        }
+    ],
+    "pdfDocument": {
+        "title": "Etkinlik Programı",
+        "description": "2025 Teknoloji Zirvesi detaylı program",
+        "filename": "program.pdf",
+        "url": "/assets/documents/program.pdf",
+        "uploadDate": "2025-01-10",
+        "additionalInfo": "Bu döküman etkinlik hakkında tüm detayları içerir"
+    },
+    "infoPdf": [
+        {
+            "title": "Bildirilerin Yayımlanması",
+            "overview": "Özet ve tam metin kitapları e-ISBN numarasının alınması ile birlikte web sayfasında paylaşılacaktır. Gerekli bilgilendirmeler maille yapılacaktır.",
+            "congress": "VI. Uluslararası Sosyal Bilimler Kongresine kabul edilen bildirilerin yayın süreci şu şekildedir:",
+            "steps": [
+                {
+                    "step": 1,
+                    "title": "Kongre Özet Bildiriler Kitabının Yayımlanması",
+                    "description": "VI. Uluslararası Sosyal Bilimler Kongresine kabul edilen bildiri özetleri, kongre sona erdikten sonra web sitemizde ilan edilecek tarihte ISBN'li Özet Bildiriler Kitabında yayımlanacaktır."
+                },
+                {
+                    "step": 2,
+                    "title": "Bildirilerin Makale Olarak Yayımlanması",
+                    "description": "İsteyen katılımcılar VI. Uluslararası Sosyal Bilimler Kongresine kabul edilen bildirilerini ilgili yayın kriterlerini sağlamak koşuluyla editörlük ve hakemlik süreçlerini tamamlayarak makale olarak yayımlatmak üzere aşağıdaki dergilere gönderebilirler:",
+                    "journals": [
+                        "Gümüşhane Üniversitesi Sosyal Bilimler Dergisi - GUSBID (TR Dizin)",
+                        "Paradigma: İktisadi ve İdari Araştırmalar Dergisi (EBSCO, Index Copernicus)",
+                        "The Journal of International Scientific Researches - ISRJournal (Index Copernicus, WorldCat, ESJI, SOBIAD vb. dizinli)"
+                    ]
+                }
+            ],
+            "note": "Kongremiz, doçentlik dahil tüm akademik yükselme kriterlerini sağlamaktadır. (Akademik teşvik kapsam dışındadır.)"
+        }
+    ],
+    "conferenceInfo": {
+        "title": "Bu Konferansa Neden Katılmalısınız",
+        "subtitle": "Networking ve Bilgi İçin Kapınız",
+        "overview": "Yaklaşan konferansımıza katılın, bilginizi genişletin, sektör liderleriyle network kurun ve profesyonel yolculuğunuzu geliştirecek değerli içgörüler kazanın.",
+        "highlights": [
+            {
+                "title": "Networking Fırsatları",
+                "description": "Sektörünüzden profesyoneller ve meslektaşlarla bağlantı kurarak değerli ilişkiler oluşturun."
+            },
+            {
+                "title": "Uzman Konuşmacılar",
+                "description": "Sektör uzmanlarından ve fikir liderlerinden deneyimlerini ve içgörülerini öğrenin."
+            },
+            {
+                "title": "Atölye Çalışmaları ve Oturumlar",
+                "description": "Etkileşimli atölye çalışmalarına katılın ve uygulamalı beceriler kazanın."
+            }
+        ]
+    }
+}
