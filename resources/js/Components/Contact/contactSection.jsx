@@ -17,6 +17,8 @@ const ContactSection = () => {
     }, []);
 
     const handleSubmit = () => {
+        // TODO: Contact form submission API entegrasyonu sonraki asamada eklenecek.
+
         setIsSubmitted(true);
         setTimeout(() => setIsSubmitted(false), 3000);
         setFormData({ name: "", email: "", subject: "", message: "" });

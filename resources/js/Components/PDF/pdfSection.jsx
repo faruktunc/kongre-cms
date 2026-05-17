@@ -6,6 +6,9 @@ const PdfSection = () => {
     const viewerRef = useRef(null);
     const [pdfData, setPdfData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [, setNumPages] = useState(0);
+    const [, setCurrentPage] = useState(1);
+    const [, setZoom] = useState(1);
 
     useEffect(() => {
         getPdf().then((data) => {
@@ -23,12 +26,12 @@ const PdfSection = () => {
                 initialDoc: pdfData.url,
                 licenseKey: "",
                 disabledElements: [
-                    "toolbarGroup-Insert", // Insert araçları
-                    "toolbarGroup-Edit", // Edit araçları
-                    "toolbarGroup-FillSign", // Fill & Sign araçları
-                    "toolbarGroup-Forms", // Forms araçları
-                    "toolbarGroup-Select", // Select araçları
-                    "menuButton", // Ayarlar burayı sakın açma tamam mı 
+                    "toolbarGroup-Insert",
+                    "toolbarGroup-Edit",
+                    "toolbarGroup-FillSign",
+                    "toolbarGroup-Forms",
+                    "toolbarGroup-Select",
+                    "menuButton",
                 ],
             },
             viewerRef.current

@@ -9,7 +9,7 @@ export default function infoPDF() {
     useEffect(() => {
         getInfoPdfComponent().then((data) => {
             if (Array.isArray(data)) {
-                const sorted = data.filet(item => item.isActive).sort((a, b) => a.order - b.order);
+                const sorted = data.filter(item => item.isActive).sort((a, b) => a.order - b.order);
                 setComponents(sorted);
             }
         });
