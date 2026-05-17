@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HandlesJsonTextarea;
 use App\Filament\Resources\EventResource\Pages\ManageEvents;
 use App\Models\Event;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -18,6 +18,8 @@ use Filament\Tables\Table;
 
 class EventResource extends Resource
 {
+    use HandlesJsonTextarea;
+
     protected static ?string $model = Event::class;
 
     public static function form(Schema $schema): Schema
@@ -29,7 +31,7 @@ class EventResource extends Resource
             Textarea::make('description'),
             TextInput::make('order')->numeric()->default(0),
             Toggle::make('is_active')->default(true),
-            KeyValue::make('payload'),
+            static::jsonTextarea('payload', 'Payload'),
         ]);
     }
 

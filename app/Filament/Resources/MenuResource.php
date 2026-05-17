@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HandlesJsonTextarea;
 use App\Filament\Resources\MenuResource\Pages\ManageMenus;
 use App\Models\Menu;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -17,6 +17,8 @@ use Filament\Tables\Table;
 
 class MenuResource extends Resource
 {
+    use HandlesJsonTextarea;
+
     protected static ?string $model = Menu::class;
 
     public static function form(Schema $schema): Schema
@@ -28,7 +30,7 @@ class MenuResource extends Resource
             TextInput::make('parent_id')->numeric(),
             TextInput::make('order')->numeric()->default(0),
             Toggle::make('is_active')->default(true),
-            KeyValue::make('payload'),
+            static::jsonTextarea('payload', 'Payload'),
         ]);
     }
 

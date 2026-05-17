@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HandlesJsonTextarea;
 use App\Filament\Resources\PageComponentResource\Pages\ManagePageComponents;
 use App\Models\PageComponent;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -17,6 +17,8 @@ use Filament\Tables\Table;
 
 class PageComponentResource extends Resource
 {
+    use HandlesJsonTextarea;
+
     protected static ?string $model = PageComponent::class;
 
     public static function form(Schema $schema): Schema
@@ -26,7 +28,7 @@ class PageComponentResource extends Resource
             TextInput::make('title'),
             TextInput::make('order')->numeric()->default(0),
             Toggle::make('is_active')->default(true),
-            KeyValue::make('payload'),
+            static::jsonTextarea('payload', 'Payload'),
         ]);
     }
 

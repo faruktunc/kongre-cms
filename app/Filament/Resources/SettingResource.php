@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HandlesJsonTextarea;
 use App\Filament\Resources\SettingResource\Pages\ManageSettings;
 use App\Models\Setting;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -15,13 +15,15 @@ use Filament\Tables\Table;
 
 class SettingResource extends Resource
 {
+    use HandlesJsonTextarea;
+
     protected static ?string $model = Setting::class;
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
             TextInput::make('key')->required(),
-            KeyValue::make('value'),
+            static::jsonTextarea('value', 'Value'),
         ]);
     }
 

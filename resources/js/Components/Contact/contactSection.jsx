@@ -17,7 +17,7 @@ const ContactSection = () => {
     }, []);
 
     const handleSubmit = () => {
-        // TODO: Contact form submission API entegrasyonu sonraki asamada eklenecek.
+        // TODO: Persist contact form submissions through Laravel endpoint.
 
         setIsSubmitted(true);
         setTimeout(() => setIsSubmitted(false), 3000);

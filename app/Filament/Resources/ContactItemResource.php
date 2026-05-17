@@ -2,13 +2,12 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\Concerns\HandlesJsonTextarea;
 use App\Filament\Resources\ContactItemResource\Pages\ManageContactItems;
 use App\Models\ContactItem;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -18,6 +17,8 @@ use Filament\Tables\Table;
 
 class ContactItemResource extends Resource
 {
+    use HandlesJsonTextarea;
+
     protected static ?string $model = ContactItem::class;
 
     public static function form(Schema $schema): Schema
@@ -25,10 +26,10 @@ class ContactItemResource extends Resource
         return $schema->components([
             TextInput::make('type'),
             TextInput::make('label'),
-            Textarea::make('value'),
+            static::jsonTextarea('value', 'Value', false),
             TextInput::make('order')->numeric()->default(0),
             Toggle::make('is_active')->default(true),
-            KeyValue::make('payload'),
+            static::jsonTextarea('payload', 'Payload'),
         ]);
     }
 

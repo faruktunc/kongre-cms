@@ -12,18 +12,19 @@ use App\Models\Setting;
 use App\Models\Speaker;
 use App\Models\Sponsor;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class ConferenceContentSeeder extends Seeder
 {
     public function run(): void
     {
         $path = base_path('mocks/db.json');
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             return;
         }
 
         $json = json_decode((string) file_get_contents($path), true);
-        if (!is_array($json)) {
+        if (! is_array($json)) {
             return;
         }
 
@@ -81,7 +82,7 @@ class ConferenceContentSeeder extends Seeder
     private function seedMenus(array $links): void
     {
         foreach ($links as $item) {
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 continue;
             }
 
@@ -103,7 +104,7 @@ class ConferenceContentSeeder extends Seeder
     private function seedPageComponents(string $key, array $items): void
     {
         foreach ($items as $item) {
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 continue;
             }
 
@@ -124,7 +125,7 @@ class ConferenceContentSeeder extends Seeder
     private function seedSpeakers(array $items): void
     {
         foreach ($items as $index => $item) {
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 continue;
             }
 
@@ -148,15 +149,19 @@ class ConferenceContentSeeder extends Seeder
     private function seedSponsors(array $items): void
     {
         foreach ($items as $item) {
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 continue;
             }
+
+            $storageImagePath = $this->normalizeSponsorImagePath(
+                $item['imgsrc'] ?? ($item['image'] ?? null)
+            );
 
             Sponsor::updateOrCreate(
                 ['id' => $item['id'] ?? null],
                 [
                     'name' => $item['name'] ?? 'Sponsor',
-                    'image' => $item['imgsrc'] ?? ($item['image'] ?? null),
+                    'image' => $storageImagePath,
                     'url' => $item['url'] ?? null,
                     'payload' => $item,
                     'order' => $item['order'] ?? 0,
@@ -166,10 +171,35 @@ class ConferenceContentSeeder extends Seeder
         }
     }
 
+    private function normalizeSponsorImagePath(mixed $rawPath): ?string
+    {
+        if (! is_string($rawPath) || trim($rawPath) === '') {
+            return null;
+        }
+
+        $filename = basename(parse_url($rawPath, PHP_URL_PATH) ?? $rawPath);
+        if ($filename === '' || $filename === '.' || $filename === '..') {
+            return null;
+        }
+
+        $sourcePath = public_path('assets/images/sponsors/'.$filename);
+        $destinationPath = 'sponsors/'.$filename;
+
+        if (is_file($sourcePath) && ! Storage::disk('public')->exists($destinationPath)) {
+            Storage::disk('public')->put($destinationPath, (string) file_get_contents($sourcePath));
+        }
+
+        if (Storage::disk('public')->exists($destinationPath)) {
+            return $destinationPath;
+        }
+
+        return null;
+    }
+
     private function seedBoards(array $items): void
     {
         foreach ($items as $index => $item) {
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 continue;
             }
 
@@ -189,7 +219,7 @@ class ConferenceContentSeeder extends Seeder
     private function seedContacts(array $items): void
     {
         foreach ($items as $index => $item) {
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 continue;
             }
 

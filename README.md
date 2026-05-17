@@ -59,3 +59,24 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Development Quick Start
+
+1. Start Sail:
+   `./vendor/bin/sail up -d`
+2. Reset database and seed CMS data:
+   `./vendor/bin/sail artisan migrate:fresh --seed`
+3. Create storage symlink for uploaded files:
+   `./vendor/bin/sail artisan storage:link`
+4. Start frontend dev server:
+   `./vendor/bin/sail npm run dev`
+
+Useful URLs:
+- App: `http://localhost`
+- Admin panel: `http://localhost/admin`
+
+Environment:
+- `VITE_API_BASE=/api` should be used for frontend API base.
+
+Note:
+- `json-server` is no longer required for runtime CMS/API data flow.
