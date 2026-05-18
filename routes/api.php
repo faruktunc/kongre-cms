@@ -11,6 +11,7 @@ Route::controller(ConferenceContentController::class)->group(function () {
     Route::get('/speakers', 'speakers');
     Route::get('/sponsors', 'sponsors');
     Route::get('/contact', 'contact');
+    Route::post('/contact/messages', 'storeContactMessage')->middleware('throttle:5,1');
     Route::get('/boards', 'boards');
     Route::get('/aboutConference', 'aboutConference');
 });

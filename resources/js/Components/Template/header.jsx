@@ -24,10 +24,10 @@ export default function Header() {
         getMenus().then((data) => {
             if (!data) return;
             const links = data.menus?.links ?? data.links ?? [];
-            const topLevel = links
-                .filter((i) => Number(i.parentId ?? 0) === 0 && i.isActive)
+            const normalizedLinks = links
+                .filter((item) => item?.isActive)
                 .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
-            setMenuItems(topLevel);
+            setMenuItems(normalizedLinks);
         });
 
         getLogo().then((data) => {
@@ -41,8 +41,14 @@ export default function Header() {
 
     const classNames = (...classes) => classes.filter(Boolean).join(" ");
 
+    const isTopLevelMenu = (item) => {
+        const parentId = Number(item?.parentId ?? 0);
+        return parentId <= 0;
+    };
+    const getMenuHref = (item) => item?.url ?? "#";
+
     const parentMenus = menuItems
-        .filter((i) => Number(i.parentId ?? 0) === 0)
+        .filter((item) => isTopLevelMenu(item))
         .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
 
     const getSubMenus = (parentId) =>
@@ -50,8 +56,8 @@ export default function Header() {
             .filter((i) => Number(i.parentId ?? 0) === Number(parentId))
             .sort(
                 (a, b) =>
-                    Number(a["child-order"] ?? a["childOrder"] ?? 0) -
-                    Number(b["child-order"] ?? b["childOrder"] ?? 0)
+                    Number(a["child-order"] ?? a["childOrder"] ?? a.order ?? 0) -
+                    Number(b["child-order"] ?? b["childOrder"] ?? b.order ?? 0)
             );
 
     return (
@@ -84,7 +90,7 @@ export default function Header() {
                                 )}
 
                                 {/* Masaüstü Menü - Tek Satır */}
-                                <div className="hidden lg:flex items-center gap-0.5 xl:gap-1 justify-end flex-nowrap">
+                                <div className="hidden lg:flex ml-auto items-center justify-end gap-0.5 xl:gap-1 flex-wrap min-w-0 max-w-full overflow-visible">
                                     {parentMenus.map((parent) => {
                                         const subMenus = getSubMenus(parent.id);
                                         if (subMenus.length > 0) {
@@ -126,14 +132,10 @@ export default function Header() {
                                                                 {subMenus.map(
                                                                     (sub) => (
                                                                         <MenuItem
-                                                                            key={
-                                                                                sub.id
-                                                                            }
+                                                                            key={sub.slug ?? sub.url ?? sub.id}
                                                                         >
                                                                             <a
-                                                                                href={
-                                                                                    sub.url
-                                                                                }
+                                                                                href={getMenuHref(sub)}
                                                                                 className="block px-4 py-2.5 text-base text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-150"
                                                                             >
                                                                                 {
@@ -151,8 +153,8 @@ export default function Header() {
                                         }
                                         return (
                                             <a
-                                                key={parent.id}
-                                                href={parent.url}
+                                                key={parent.slug ?? parent.url ?? parent.id}
+                                                href={getMenuHref(parent)}
                                                 className="px-4 lg:px-4 xl:px-5 py-3 rounded-lg text-base lg:text-base xl:text-lg font-semibold text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 whitespace-nowrap"
                                             >
                                                 {parent.name}
@@ -204,12 +206,8 @@ export default function Header() {
                                                             {subMenus.map(
                                                                 (sub) => (
                                                                     <a
-                                                                        key={
-                                                                            sub.id
-                                                                        }
-                                                                        href={
-                                                                            sub.url
-                                                                        }
+                                                                        key={sub.slug ?? sub.url ?? sub.id}
+                                                                        href={getMenuHref(sub)}
                                                                         className="block px-5 py-3 rounded-md text-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-150"
                                                                     >
                                                                         {
@@ -226,7 +224,7 @@ export default function Header() {
                                     }
                                     return (
                                         <a
-                                            key={parent.id}
+                                            key={parent.slug ?? parent.url ?? parent.id}
                                             href={parent.url}
                                             className="block px-5 py-4 rounded-md text-lg font-semibold text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-150"
                                         >

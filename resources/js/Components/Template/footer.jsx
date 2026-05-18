@@ -21,13 +21,14 @@ const iconMap = {
 export default function Footer() {
     const [footer, setFooter] = useState({ links: [], socials: [] });
     const [logo, setLogo] = useState([]);
+    const currentYear = new Date().getFullYear();
 
     useEffect(() => {
         getMenus().then((data) => {
             if (data) {
                 // link dizisini al, parentId'si 0 olanları filtrele
                 const filteredLinks = (data.links ?? []).filter(
-                    (item) => item.parentId === 0 && item.isActive
+                    (item) => Number(item.parentId ?? 0) <= 0 && item.isActive
                 );
 
                 // sırala
@@ -81,7 +82,7 @@ export default function Footer() {
             <div className="flex flex-wrap justify-center gap-6">
                 {footer.links.map((item) => (
                     <a
-                        key={item.id}
+                        key={item.slug ?? item.url ?? item.id}
                         href={item.url}
                         className="px-4 py-2 text-sm font-medium text-dark-700 dark:text-gray-200 hover:text-dark-900 dark:hover:text-primary-25 transition"
                     >
@@ -97,7 +98,7 @@ export default function Footer() {
                     return (
                         IconComponent && (
                             <a
-                                key={social.id}
+                                key={`${social.platform ?? "social"}-${social.url ?? social.id}`}
                                 href={social.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -111,8 +112,8 @@ export default function Footer() {
 
             {/* 📄 Telif Hakkı */}
             <div className="text-center text-sm mt-4 dark:text-gray-200">
-                Copyright © 2025{" "}
-                <span className="font-semibold">KahPerenG</span>. All rights reserved.
+                Copyright © {currentYear} {" "}
+                . All rights reserved.
             </div>
         </div>
     );

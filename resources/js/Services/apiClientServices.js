@@ -14,6 +14,7 @@ export const getEvents = () => api.get("/events").then(r => r.data);
 export const getSessions = () => api.get("/sessions").then(r => r.data);
 export const getLogo = () => api.get("/logo").then(r => r.data);
 export const getContact = () => api.get("/contact").then(r => r.data);
+export const submitContactMessage = (payload) => api.post("/contact/messages", payload).then(r => r.data);
 export const getBoard = () => api.get("/boards").then(r => r.data);
 export const getAboutConference = () => api.get("/aboutConference").then(r => r.data);
 

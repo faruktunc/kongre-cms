@@ -20,13 +20,20 @@ class ConferenceSettings extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $navigationLabel = 'Conference Settings';
+    protected static ?string $navigationLabel = 'Konferans Ayarları';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Ana Sayfa Ayarları';
 
     protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament.pages.conference-settings';
 
     public ?array $data = [];
+
+    public function getTitle(): string
+    {
+        return 'Konferans Ayarları';
+    }
 
     public function mount(): void
     {
@@ -60,7 +67,7 @@ class ConferenceSettings extends Page implements HasForms
                             ->columnSpanFull(),
                         DatePicker::make('event_date')->label('Başlangıç Tarihi'),
                         DatePicker::make('event_end_date')->label('Bitiş Tarihi'),
-                        TextInput::make('event_location')->label('Lokasyon')->columnSpanFull(),
+                        TextInput::make('event_location')->label('Konum')->columnSpanFull(),
                     ])
                     ->columns(2),
             ]);
@@ -70,7 +77,7 @@ class ConferenceSettings extends Page implements HasForms
     {
         return [
             Action::make('save')
-                ->label('Save')
+                ->label('Kaydet')
                 ->action(fn (): mixed => $this->save()),
         ];
     }

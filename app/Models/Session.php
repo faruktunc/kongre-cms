@@ -21,7 +21,6 @@ class Session extends Model
         'start_time',
         'end_time',
         'speakers',
-        'order',
         'is_active',
     ];
 
@@ -30,8 +29,12 @@ class Session extends Model
         return [
             'speakers' => 'array',
             'is_active' => 'boolean',
-            'order' => 'integer',
         ];
+    }
+
+    public function scopeChronological(Builder $query): Builder
+    {
+        return $query->orderBy('date')->orderBy('start_time');
     }
 
     public function scopeActive(Builder $query): Builder

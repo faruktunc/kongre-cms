@@ -421,21 +421,21 @@
             {
                 "id": 2,
                 "platform": "instagram",
-                "url": "https://www.instagram.com/bilal.gksn/",
+                "url": "https://www.instagram.com/",
                 "order": 20,
                 "isActive": true
             },
             {
                 "id": 3,
                 "platform": "x",
-                "url": "https://x.com/KHPRRNG",
+                "url": "https://x.com/",
                 "order": 30,
                 "isActive": true
             },
             {
                 "id": 4,
                 "platform": "linkedin",
-                "url": "https://www.linkedin.com/in/bilal-g%C3%B6k%C5%9Fen-8bb6b8225/",
+                "url": "https://www.linkedin.com/",
                 "order": 40,
                 "isActive": true
             },
@@ -449,7 +449,7 @@
             {
                 "id": 6,
                 "platform": "github",
-                "url": "https://github.com/Bilalng",
+                "url": "https://github.com/",
                 "order": 60,
                 "isActive": true
             }
@@ -812,26 +812,7 @@
             "id": 1,
             "name": "Onur Kurulu",
             "members": [
-                {
-                    "name": "Prof.Dr. Mustafa Doğan KARACOŞKUN",
-                    "title": "Kilis 7 Aralık Üniversitesi Rektörü"
-                },
-                {
-                    "name": "Prof.Dr. Mutlu TÜRKMEN",
-                    "title": "Bayburt Üniversitesi Rektörü"
-                },
-                {
-                    "name": "Prof.Dr. Ahmet YILDIRIM",
-                    "title": "Uluslararası Saraybosna Üniversitesi (IUS) Rektörü"
-                },
-                {
-                    "name": "Prof.Dr. Fatih YILMAZ",
-                    "title": "Tokat Gaziosmanpaşa Üniversitesi Rektörü"
-                },
-                {
-                    "name": "Prof.Dr. Halil İbrahim ZEYBEK",
-                    "title": "Gümüşhane Üniversitesi Rektörü"
-                }
+
             ],
             "isActive" : true
         },
@@ -839,22 +820,7 @@
             "id": 2,
             "name": "Düzenleme Kurulu",
             "members": [
-                {
-                    "name": "Prof.Dr. Ahmet YILMAZ",
-                    "title": "Organizasyon Komitesi Başkanı"
-                },
-                {
-                    "name": "Doç.Dr. Mehmet KAYA",
-                    "title": "Teknik Koordinatör"
-                },
-                {
-                    "name": "Dr. Öğr. Üyesi Ayşe DEMİR",
-                    "title": "İletişim Sorumlusu"
-                },
-                {
-                    "name": "Arş.Gör. Fatma ÇELİK",
-                    "title": "Lojistik Koordinatörü"
-                }
+
             ],
             "isActive" : true
         },
@@ -862,20 +828,7 @@
             "id": 3,
             "name": "Bilim Kurulu",
             "members": [
-                {
-                    "name": "Prof.Dr. Can ÖZKAN",
-                    "title": "Bilim Kurulu Başkanı"
-                },
-                {
-                    "name": "Prof.Dr. Zeynep ARSLAN",
-                    "title": "Bilim Kurulu Üyesi"
-                },
-                { "name": "Doç.Dr. Ali VURAL", "title": "Bilim Kurulu Üyesi" },
-                { "name": "Doç.Dr. Elif KURT", "title": "Bilim Kurulu Üyesi" },
-                {
-                    "name": "Dr. Öğr. Üyesi Burak ŞAHIN",
-                    "title": "Bilim Kurulu Sekreteri"
-                }
+
             ],
             "isActive" : true
         }

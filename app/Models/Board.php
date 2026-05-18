@@ -11,15 +11,17 @@ class Board extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'members', 'payload', 'order', 'is_active',
+        'name', 'icon', 'members', 'order', 'is_active',
     ];
 
-    protected $casts = [
-        'members' => 'array',
-        'payload' => 'array',
-        'is_active' => 'boolean',
-        'order' => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'members' => 'array',
+            'is_active' => 'boolean',
+            'order' => 'integer',
+        ];
+    }
 
     public function scopeActive(Builder $query): Builder
     {

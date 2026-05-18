@@ -6,6 +6,7 @@ use App\Filament\Resources\SpeakerResource\Pages\CreateSpeaker;
 use App\Filament\Resources\SpeakerResource\Pages\EditSpeaker;
 use App\Filament\Resources\SpeakerResource\Pages\ListSpeakers;
 use App\Models\Speaker;
+use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
@@ -25,29 +26,58 @@ class SpeakerResource extends Resource
 {
     protected static ?string $model = Speaker::class;
 
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Konferans Bilgileri';
+
+    protected static ?string $navigationLabel = 'Konuşmacılar';
+
+    protected static ?string $modelLabel = 'Konuşmacı';
+
+    protected static ?string $pluralModelLabel = 'Konuşmacılar';
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Speaker Information')
+            Section::make('Konuşmacı Bilgileri')
                 ->schema([
-                    TextInput::make('name')->required(),
-                    TextInput::make('title'),
-                    TextInput::make('company'),
+                    TextInput::make('name')
+                        ->label('Ad Soyad')
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('title')
+                        ->label('Ünvan')
+                        ->maxLength(255),
+                    TextInput::make('company')
+                        ->label('Kurum')
+                        ->maxLength(255),
                     FileUpload::make('photo')
+                        ->label('Fotoğraf')
                         ->disk('public')
                         ->directory('speakers')
                         ->visibility('public')
-                        ->image(),
-                    Textarea::make('bio')->columnSpanFull(),
+                        ->image()
+                        ->imageEditor()
+                        ->columnSpan(1),
+                    Textarea::make('bio')
+                        ->label('Biyografi')
+                        ->rows(6)
+                        ->columnSpan(2),
                     Repeater::make('expertise')
-                        ->label('Expertise Items')
-                        ->simple(TextInput::make('value')->required())
+                        ->label('Uzmanlık Alanları')
+                        ->simple(TextInput::make('value')->label('Uzmanlık')->required())
                         ->default([])
                         ->columnSpanFull(),
-                    TextInput::make('order')->numeric()->default(0),
-                    Toggle::make('is_active')->default(true),
+                    TextInput::make('order')
+                        ->label('Sıra')
+                        ->numeric()
+                        ->default(0),
+                    Toggle::make('is_active')
+                        ->label('Aktif')
+                        ->default(true),
                 ])
-                ->columns(2),
+                ->columns(3)
+                ->columnSpanFull(),
         ]);
     }
 
@@ -55,11 +85,11 @@ class SpeakerResource extends Resource
     {
         return $table->columns([
             TextColumn::make('id')->sortable(),
-            ImageColumn::make('photo')->disk('public')->circular(),
-            TextColumn::make('name')->searchable(),
-            TextColumn::make('title'),
-            TextColumn::make('order')->sortable(),
-            ToggleColumn::make('is_active'),
+            ImageColumn::make('photo')->label('Fotoğraf')->disk('public')->circular(),
+            TextColumn::make('name')->label('Ad Soyad')->searchable(),
+            TextColumn::make('title')->label('Ünvan'),
+            TextColumn::make('order')->label('Sıra')->sortable(),
+            ToggleColumn::make('is_active')->label('Aktif'),
         ])->recordActions([
             EditAction::make(),
             DeleteAction::make(),

@@ -150,7 +150,7 @@ export default function SliderSection() {
                                                         className={
                                                             isHighlight
                                                                 ? "text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-600"
-                                                                : ""
+                                                                : "[text-shadow:0_1px_0_#fff,0_-1px_0_#fff,1px_0_0_#fff,-1px_0_0_#fff,0_0_12px_rgba(255,255,255,0.35)]"
                                                         }
                                                     >
                                                         {word}{" "}

@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Board;
-use App\Models\ContactItem;
 use App\Models\Event;
-use App\Models\Menu;
 use App\Models\Session;
 use App\Models\Speaker;
 use App\Models\Sponsor;
@@ -26,14 +24,14 @@ class ConferenceContentSeeder extends Seeder
             return;
         }
 
-        $this->seedMenus($json['menus']['links'] ?? []);
         $this->seedSpeakers($json['speakers'] ?? []);
         $this->seedSponsors($json['sponsors'] ?? []);
         $this->seedBoards($json['boards'] ?? []);
-        $this->seedContacts($json['contact'] ?? []);
-
         $event = $json['events'] ?? null;
         if (is_array($event)) {
+            $logo = is_array($json['logo'] ?? null) ? $json['logo'] : [];
+            $socials = is_array($json['menus']['socials'] ?? null) ? $json['menus']['socials'] : [];
+
             $eventIdentity = [
                 'title' => $event['title'] ?? null,
                 'description' => $event['description'] ?? null,
@@ -43,6 +41,14 @@ class ConferenceContentSeeder extends Seeder
                 'images' => $this->normalizeSliderImagePaths($event['images'] ?? []),
                 'highlight_words' => $event['highlight_words'] ?? [],
                 'conference_info' => is_array($json['conferenceInfo'] ?? null) ? $json['conferenceInfo'] : [],
+                'contact' => $this->buildContactPayload($json['contact'] ?? []),
+                'general' => [
+                    'logo' => [
+                        'src' => $this->normalizeLogoPath($logo['src'] ?? null),
+                        'alt' => $logo['alt'] ?? 'Logo',
+                    ],
+                    'socials' => $socials,
+                ],
             ];
 
             $eventModel = Event::updateOrCreate(
@@ -59,32 +65,6 @@ class ConferenceContentSeeder extends Seeder
             );
 
             $this->seedSessions($eventModel->id, $event['sessions'] ?? []);
-        }
-    }
-
-    private function seedMenus(array $links): void
-    {
-        foreach ($links as $item) {
-            if (! is_array($item)) {
-                continue;
-            }
-
-            if (in_array($item['url'] ?? null, ['/pdf', '/info'], true)) {
-                continue;
-            }
-
-            Menu::updateOrCreate(
-                ['id' => $item['id'] ?? null],
-                [
-                    'title' => $item['name'] ?? 'Untitled',
-                    'slug' => $item['slug'] ?? null,
-                    'url' => $item['url'] ?? null,
-                    'parent_id' => ($item['parentId'] ?? 0) > 0 ? $item['parentId'] : null,
-                    'order' => $item['order'] ?? 0,
-                    'is_active' => $item['isActive'] ?? true,
-                    'payload' => $item,
-                ]
-            );
         }
     }
 
@@ -125,6 +105,31 @@ class ConferenceContentSeeder extends Seeder
 
         $sourcePath = public_path('assets/images/'.$filename);
         $destinationPath = 'speakers/'.$filename;
+
+        if (is_file($sourcePath) && ! Storage::disk('public')->exists($destinationPath)) {
+            Storage::disk('public')->put($destinationPath, (string) file_get_contents($sourcePath));
+        }
+
+        if (Storage::disk('public')->exists($destinationPath)) {
+            return $destinationPath;
+        }
+
+        return null;
+    }
+
+    private function normalizeLogoPath(mixed $rawPath): ?string
+    {
+        if (! is_string($rawPath) || trim($rawPath) === '') {
+            return null;
+        }
+
+        $filename = basename(parse_url($rawPath, PHP_URL_PATH) ?? $rawPath);
+        if ($filename === '' || $filename === '.' || $filename === '..') {
+            return null;
+        }
+
+        $sourcePath = public_path('assets/images/'.$filename);
+        $destinationPath = 'logos/'.$filename;
 
         if (is_file($sourcePath) && ! Storage::disk('public')->exists($destinationPath)) {
             Storage::disk('public')->put($destinationPath, (string) file_get_contents($sourcePath));
@@ -199,7 +204,6 @@ class ConferenceContentSeeder extends Seeder
                 [
                     'name' => $item['name'] ?? 'Board',
                     'members' => $item['members'] ?? [],
-                    'payload' => $item,
                     'order' => $item['order'] ?? ($index + 1) * 10,
                     'is_active' => $item['isActive'] ?? true,
                 ]
@@ -224,29 +228,6 @@ class ConferenceContentSeeder extends Seeder
                     'start_time' => $item['start_time'] ?? null,
                     'end_time' => $item['end_time'] ?? null,
                     'speakers' => $item['speakers'] ?? [],
-                    'order' => $item['order'] ?? ($index + 1) * 10,
-                    'is_active' => $item['isActive'] ?? true,
-                ]
-            );
-        }
-    }
-
-    private function seedContacts(array $items): void
-    {
-        foreach ($items as $index => $item) {
-            if (! is_array($item)) {
-                continue;
-            }
-
-            ContactItem::updateOrCreate(
-                [
-                    'label' => $item['title'] ?? null,
-                    'order' => $item['order'] ?? ($index + 1) * 10,
-                ],
-                [
-                    'type' => $item['icon'] ?? null,
-                    'value' => $item['value'] ?? null,
-                    'payload' => $item,
                     'is_active' => $item['isActive'] ?? true,
                 ]
             );
@@ -300,5 +281,52 @@ class ConferenceContentSeeder extends Seeder
         return str_contains($rawPath, '/') && ! str_starts_with($rawPath, '/')
             ? $rawPath
             : null;
+    }
+
+    private function buildContactPayload(array $items): array
+    {
+        $payload = [
+            'phone' => ['value' => null, 'is_active' => false],
+            'email' => ['value' => null, 'is_active' => false],
+            'address' => ['value' => null, 'is_active' => false],
+            'hours' => ['value' => null, 'is_active' => false],
+            'academic' => ['is_active' => false, 'members' => []],
+        ];
+
+        foreach ($items as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $title = mb_strtolower((string) ($item['title'] ?? ''), 'UTF-8');
+            $isActive = (bool) ($item['isActive'] ?? true);
+
+            if (str_contains($title, 'telefon')) {
+                $payload['phone'] = ['value' => $item['value'] ?? null, 'is_active' => $isActive];
+            } elseif (str_contains($title, 'e-posta') || str_contains($title, 'email')) {
+                $payload['email'] = ['value' => $item['value'] ?? null, 'is_active' => $isActive];
+            } elseif (str_contains($title, 'adres')) {
+                $payload['address'] = ['value' => $item['value'] ?? null, 'is_active' => $isActive];
+            } elseif (str_contains($title, 'saat')) {
+                $payload['hours'] = ['value' => $item['value'] ?? null, 'is_active' => $isActive];
+            } elseif (str_contains($title, 'akademik')) {
+                $members = collect(is_array($item['members'] ?? null) ? $item['members'] : [])
+                    ->filter(fn (mixed $member): bool => is_array($member))
+                    ->map(fn (array $member): array => [
+                        'name' => $member['name'] ?? null,
+                        'email' => $member['email'] ?? null,
+                        'isActive' => $member['isActive'] ?? true,
+                    ])
+                    ->values()
+                    ->all();
+
+                $payload['academic'] = [
+                    'is_active' => $isActive,
+                    'members' => $members,
+                ];
+            }
+        }
+
+        return $payload;
     }
 }

@@ -6,15 +6,15 @@ Route::get('/', function () {
     return inertia('home');
 });
 
-Route::get('/speakers', function () {
+Route::get('/konusmacilar', function () {
     return inertia('speakers');
 });
 
-Route::get('/contact', function () {
+Route::get('/iletisim', function () {
     return inertia('contact');
 });
 
-Route::get('/boards', function () {
+Route::get('/kurullar', function () {
     return inertia('board');
 });
 

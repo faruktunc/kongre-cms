@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send, Clock, Globe, Check } from "lucide-react";
-import { getContact } from "../../Services/apiClientServices";
+import { getContact, submitContactMessage } from "../../Services/apiClientServices";
 
 const ContactSection = () => {
     const [contactInfo, setContactInfo] = useState([]);
@@ -9,19 +9,54 @@ const ContactSection = () => {
         email: "",
         subject: "",
         message: "",
+        website: "",
+        form_started_at: Math.floor(Date.now() / 1000),
     });
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState("");
 
     useEffect(() => {
         getContact().then((data) => setContactInfo(data));
     }, []);
 
-    const handleSubmit = () => {
-        // TODO: Persist contact form submissions through Laravel endpoint.
+    const handleSubmit = async () => {
+        if (isSubmitting) {
+            return;
+        }
 
-        setIsSubmitted(true);
-        setTimeout(() => setIsSubmitted(false), 3000);
-        setFormData({ name: "", email: "", subject: "", message: "" });
+        setSubmitError("");
+        setIsSubmitting(true);
+
+        try {
+            await submitContactMessage(formData);
+            setIsSubmitted(true);
+            setTimeout(() => setIsSubmitted(false), 3000);
+            setFormData({
+                name: "",
+                email: "",
+                subject: "",
+                message: "",
+                website: "",
+                form_started_at: Math.floor(Date.now() / 1000),
+            });
+        } catch (error) {
+            const firstValidationError = Object.values(
+                error?.response?.data?.errors ?? {}
+            )?.[0]?.[0];
+            const backendMessage = error?.response?.data?.message;
+            setSubmitError(
+                typeof firstValidationError === "string" &&
+                    firstValidationError.length > 0
+                    ? firstValidationError
+                    : typeof backendMessage === "string" &&
+                        backendMessage.length > 0
+                      ? backendMessage
+                    : "Mesaj gönderilemedi. Lütfen tekrar deneyin."
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleChange = (field, value) => {
@@ -89,9 +124,6 @@ const ContactSection = () => {
                                                     <h4 className="text-md font-semibold text-gray-900 dark:text-white">
                                                         {person.name}
                                                     </h4>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                        {person.university}
-                                                    </p>
                                                     <a
                                                         href={`mailto:${person.email}`}
                                                         className="text-sm text-red-600 dark:text-red-400 hover:underline"
@@ -128,12 +160,18 @@ const ContactSection = () => {
                                                 <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1">
                                                     {info.title}
                                                 </h3>
-                                                <a
-                                                    href={info.link}
-                                                    className="text-gray-900 dark:text-white font-medium hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200 break-words"
-                                                >
-                                                    {info.value}
-                                                </a>
+                                                {info.link ? (
+                                                    <a
+                                                        href={info.link}
+                                                        className="text-gray-900 dark:text-white font-medium hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200 break-words"
+                                                    >
+                                                        {info.value}
+                                                    </a>
+                                                ) : (
+                                                    <p className="text-gray-900 dark:text-white font-medium break-words">
+                                                        {info.value}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -150,6 +188,22 @@ const ContactSection = () => {
                         >
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="hidden" aria-hidden="true">
+                                        <label htmlFor="website">Website</label>
+                                        <input
+                                            id="website"
+                                            type="text"
+                                            tabIndex={-1}
+                                            autoComplete="off"
+                                            value={formData.website}
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    "website",
+                                                    e.target.value
+                                                )
+                                            }
+                                        />
+                                    </div>
                                     <div>
                                         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                             Adınız Soyadınız
@@ -221,13 +275,18 @@ const ContactSection = () => {
                                 </div>
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={isSubmitted}
+                                    disabled={isSubmitted || isSubmitting}
                                     className="w-full bg-gradient-to-r from-red-600 to-red-700 dark:from-red-500 dark:to-red-600 text-white font-semibold py-4 px-6 rounded-xl hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
                                     {isSubmitted ? (
                                         <>
                                             <Check className="w-5 h-5" />
                                             <span>Gönderildi!</span>
+                                        </>
+                                    ) : isSubmitting ? (
+                                        <>
+                                            <Send className="w-5 h-5" />
+                                            <span>Gönderiliyor...</span>
                                         </>
                                     ) : (
                                         <>
@@ -236,6 +295,11 @@ const ContactSection = () => {
                                         </>
                                     )}
                                 </button>
+                                {submitError && (
+                                    <p className="text-sm text-red-600 dark:text-red-400">
+                                        {submitError}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>

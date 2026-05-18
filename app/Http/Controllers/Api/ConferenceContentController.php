@@ -3,40 +3,66 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreContactMessageRequest;
 use App\Models\Board;
-use App\Models\ContactItem;
+use App\Models\ContactMessage;
 use App\Models\Event;
-use App\Models\Menu;
+use App\Models\Page;
 use App\Models\Session;
 use App\Models\Speaker;
 use App\Models\Sponsor;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
 class ConferenceContentController extends Controller
 {
     public function menus(): JsonResponse
     {
-        $links = Menu::query()
+        $dynamicLinks = Page::query()
             ->active()
             ->orderBy('order')
             ->get()
-            ->map(fn (Menu $menu) => $this->menuToLegacy($menu))
+            ->filter(fn (Page $page): bool => ! $page->isStaticPage())
+            ->map(fn (Page $page): array => $this->pageToLegacy($page))
+            ->values()
+            ->all();
+
+        $links = collect(Page::staticPages())
+            ->map(fn (array $page): array => array_merge($page, [
+                'url' => isset($page['slug']) ? '/'.ltrim((string) $page['slug'], '/') : null,
+            ]))
+            ->merge($dynamicLinks)
+            ->unique(fn (array $item): string => (string) ($item['slug'] ?? $item['url'] ?? $item['id']))
+            ->sortBy('order')
+            ->values()
+            ->all();
+
+        $event = Event::query()->active()->orderBy('order')->first();
+        $payload = is_array($event?->payload) ? $event->payload : [];
+        $general = is_array($payload['general'] ?? null) ? $payload['general'] : [];
+        $socials = collect(is_array($general['socials'] ?? null) ? $general['socials'] : [])
+            ->filter(fn (mixed $item): bool => is_array($item) && ($item['isActive'] ?? true))
             ->values()
             ->all();
 
         return response()->json([
-            'menus' => ['links' => $links, 'socials' => []],
+            'menus' => ['links' => $links, 'socials' => $socials],
             'links' => $links,
-            'socials' => [],
+            'socials' => $socials,
         ]);
     }
 
     public function logo(): JsonResponse
     {
+        $event = Event::query()->active()->orderBy('order')->first();
+        $payload = is_array($event?->payload) ? $event->payload : [];
+        $general = is_array($payload['general'] ?? null) ? $payload['general'] : [];
+        $logo = is_array($general['logo'] ?? null) ? $general['logo'] : [];
+
         return response()->json([
-            'src' => '/assets/images/logo.png',
-            'alt' => 'Logo',
+            'src' => $this->assetUrl($logo['src'] ?? null) ?? '/assets/images/logo.png',
+            'alt' => $logo['alt'] ?? 'Logo',
         ]);
     }
 
@@ -64,9 +90,7 @@ class ConferenceContentController extends Controller
 
         $rows = Session::query()
             ->active()
-            ->orderBy('date')
-            ->orderBy('start_time')
-            ->orderBy('order')
+            ->chronological()
             ->get();
 
         return response()->json($rows->map(function (Session $row) use ($speakers): array {
@@ -83,7 +107,6 @@ class ConferenceContentController extends Controller
                 'date' => $row->date,
                 'start_time' => $row->start_time,
                 'end_time' => $row->end_time,
-                'order' => $row->order,
                 'is_active' => $row->is_active,
                 'speakers' => $speakerIds
                     ->map(function (int $speakerId) use ($speakers): ?array {
@@ -173,45 +196,99 @@ class ConferenceContentController extends Controller
 
     public function contact(): JsonResponse
     {
-        $rows = ContactItem::query()->active()->orderBy('order')->get();
+        $event = Event::query()->active()->orderBy('order')->first();
+        $payload = is_array($event?->payload) ? $event->payload : [];
+        $contact = is_array($payload['contact'] ?? null) ? $payload['contact'] : [];
 
-        return response()->json($rows->map(function (ContactItem $row): array {
-            $fallback = [
-                'icon' => $row->type,
-                'title' => $row->label,
-                'value' => $this->normalizeDisplayValue($row->value),
+        $items = [];
+
+        if (($contact['phone']['is_active'] ?? false) && filled($contact['phone']['value'] ?? null)) {
+            $phone = (string) $contact['phone']['value'];
+            $items[] = [
+                'icon' => 'Phone',
+                'title' => 'Telefon',
+                'value' => $phone,
+                'link' => 'tel:'.preg_replace('/\s+/', '', $phone),
+            ];
+        }
+
+        if (($contact['email']['is_active'] ?? false) && filled($contact['email']['value'] ?? null)) {
+            $email = (string) $contact['email']['value'];
+            $items[] = [
+                'icon' => 'Mail',
+                'title' => 'E-posta',
+                'value' => $email,
+                'link' => 'mailto:'.$email,
+            ];
+        }
+
+        if (($contact['address']['is_active'] ?? false) && filled($contact['address']['value'] ?? null)) {
+            $items[] = [
+                'icon' => 'MapPin',
+                'title' => 'Adres',
+                'value' => (string) $contact['address']['value'],
                 'link' => null,
             ];
+        }
 
-            if (! is_array($row->payload)) {
-                return $fallback;
+        if (($contact['hours']['is_active'] ?? false) && filled($contact['hours']['value'] ?? null)) {
+            $items[] = [
+                'icon' => 'Clock',
+                'title' => 'Calisma Saatleri',
+                'value' => (string) $contact['hours']['value'],
+                'link' => null,
+            ];
+        }
+
+        if ($contact['academic']['is_active'] ?? false) {
+            $members = collect(is_array($contact['academic']['members'] ?? null) ? $contact['academic']['members'] : [])
+                ->filter(fn (mixed $member): bool => is_array($member) && ($member['isActive'] ?? true))
+                ->map(fn (array $member): array => [
+                    'name' => $member['name'] ?? null,
+                    'email' => $member['email'] ?? null,
+                ])
+                ->filter(fn (array $member): bool => filled($member['name']) && filled($member['email']))
+                ->values()
+                ->all();
+
+            if ($members !== []) {
+                $items[] = [
+                    'icon' => 'Mail',
+                    'title' => 'Akademik İletişim',
+                    'members' => $members,
+                ];
             }
+        }
 
-            return array_merge($fallback, $row->payload);
-        })->values()->all());
+        return response()->json($items);
+    }
+
+    public function storeContactMessage(StoreContactMessageRequest $request): Response
+    {
+        ContactMessage::query()->create([
+            'name' => $request->string('name')->toString(),
+            'email' => $request->string('email')->toString(),
+            'subject' => $request->string('subject')->toString(),
+            'message' => $request->string('message')->toString(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'is_read' => false,
+        ]);
+
+        return response()->noContent();
     }
 
     public function boards(): JsonResponse
     {
         $rows = Board::query()->active()->orderBy('order')->get();
 
-        return response()->json($rows->map(function (Board $row): array {
-            $fallback = [
-                'id' => $row->id,
-                'name' => $row->name,
-                'members' => $this->normalizeArray($row->members),
-                'isActive' => $row->is_active,
-            ];
-
-            if (! is_array($row->payload)) {
-                return $fallback;
-            }
-
-            $payload = $row->payload;
-            $payload['members'] = $this->normalizeArray($payload['members'] ?? $row->members);
-
-            return array_merge($fallback, $payload);
-        })->values()->all());
+        return response()->json($rows->map(fn (Board $row): array => [
+            'id' => $row->id,
+            'name' => $row->name,
+            'icon' => $row->icon,
+            'members' => $this->normalizeArray($row->members),
+            'isActive' => $row->is_active,
+        ])->values()->all());
     }
 
     public function aboutConference(): JsonResponse
@@ -245,21 +322,6 @@ class ConferenceContentController extends Controller
         return [];
     }
 
-    private function normalizeDisplayValue(mixed $value): string
-    {
-        if ($value === null) {
-            return '';
-        }
-
-        if (is_scalar($value)) {
-            return (string) $value;
-        }
-
-        $encodedValue = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-        return $encodedValue === false ? '' : $encodedValue;
-    }
-
     private function sponsorStorageUrl(?string $imagePath, mixed $payload): ?string
     {
         $path = $imagePath;
@@ -285,19 +347,64 @@ class ConferenceContentController extends Controller
         return Storage::disk('public')->url($normalizedPath);
     }
 
-    private function menuToLegacy(Menu $menu): array
+    private function pageToLegacy(Page $page): array
     {
-        $payload = $menu->payload ?? [];
+        $gallery = collect($this->normalizeArray($page->gallery))
+            ->map(fn (mixed $path): ?string => is_string($path) ? $this->assetUrl($path) : null)
+            ->filter(fn (?string $path): bool => is_string($path) && $path !== '')
+            ->values()
+            ->all();
 
-        return array_merge([
-            'id' => $menu->id,
-            'name' => $menu->title,
-            'slug' => $menu->slug,
-            'url' => $menu->url,
-            'parentId' => $menu->parent_id ?? 0,
-            'order' => $menu->order,
-            'isActive' => $menu->is_active,
-        ], is_array($payload) ? $payload : []);
+        $documents = collect($this->normalizeArray($page->documents))
+            ->map(function (mixed $item, int $index): ?array {
+                if (is_string($item)) {
+                    $url = $this->assetUrl($item);
+
+                    if (! is_string($url) || $url === '') {
+                        return null;
+                    }
+
+                    return [
+                        'display_name' => 'Doküman '.($index + 1),
+                        'url' => $url,
+                    ];
+                }
+
+                if (! is_array($item)) {
+                    return null;
+                }
+
+                $displayName = $item['display_name'] ?? $item['name'] ?? null;
+                $rawPath = $item['file'] ?? $item['url'] ?? null;
+                $url = is_string($rawPath) ? $this->assetUrl($rawPath) : null;
+
+                if (! is_string($url) || $url === '') {
+                    return null;
+                }
+
+                return [
+                    'display_name' => filled($displayName) ? (string) $displayName : 'Doküman '.($index + 1),
+                    'url' => $url,
+                ];
+            })
+            ->filter(fn (?array $item): bool => is_array($item))
+            ->values()
+            ->all();
+
+        return [
+            'id' => $page->id,
+            'name' => $page->title,
+            'title' => $page->title,
+            'subtitle' => $page->subtitle,
+            'content' => $page->content,
+            'gallery' => $gallery,
+            'documents' => $documents,
+            'slug' => $page->slug,
+            'url' => $page->slug ? '/'.ltrim($page->slug, '/') : null,
+            'parentId' => $page->parent_id ?? 0,
+            'order' => $page->order,
+            'isActive' => $page->is_active,
+        ];
     }
 
     private function eventIdentity(array $event): array

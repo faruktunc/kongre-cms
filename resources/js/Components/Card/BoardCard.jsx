@@ -1,21 +1,20 @@
 import React, { useState } from "react";
 import {
-    Users,
-    Award,
-    GraduationCap,
-    ChevronDown,
-    ChevronUp,
+    Users, Star, BookOpen, Award, Lightbulb, Globe, Briefcase,
+    Mic, GraduationCap, Handshake, Zap, Heart, Target, Trophy,
+    FlaskConical, Network, BarChart, Calendar, MessageCircle, Rocket,
+    ChevronDown, ChevronUp,
 } from "lucide-react";
 
 const iconMap = {
-    "Onur Kurulu": Award,
-    "Düzenleme Kurulu": Users,
-    "Bilim Kurulu": GraduationCap,
+    Users, Star, BookOpen, Award, Lightbulb, Globe, Briefcase,
+    Mic, GraduationCap, Handshake, Zap, Heart, Target, Trophy,
+    FlaskConical, Network, BarChart, Calendar, MessageCircle, Rocket,
 };
 
 export default function BoardCard({ committee, index }) {
     const [isExpanded, setIsExpanded] = useState(true);
-    const Icon = iconMap[committee.name] || Users;
+    const Icon = iconMap[committee.icon] ?? Users;
 
     return (
         <div
@@ -54,9 +53,7 @@ export default function BoardCard({ committee, index }) {
                 </div>
                 <div
                     className={`transition-all duration-500 overflow-hidden ${
-                        isExpanded
-                            ? "max-h-[1000px] opacity-100"
-                            : "max-h-0 opacity-0"
+                        isExpanded ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
                     }`}
                 >
                     {committee.members && (

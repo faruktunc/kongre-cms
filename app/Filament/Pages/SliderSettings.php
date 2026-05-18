@@ -19,13 +19,20 @@ class SliderSettings extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-photo';
 
-    protected static ?string $navigationLabel = 'Slider Settings';
+    protected static ?string $navigationLabel = 'Slider Ayarları';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Ana Sayfa Ayarları';
 
     protected static ?int $navigationSort = 3;
 
     protected string $view = 'filament.pages.slider-settings';
 
     public ?array $data = [];
+
+    public function getTitle(): string
+    {
+        return 'Slider Ayarları';
+    }
 
     public function mount(): void
     {
@@ -49,7 +56,7 @@ class SliderSettings extends Page implements HasForms
         return $schema
             ->statePath('data')
             ->components([
-                Section::make('Slider Images')
+                Section::make('Slider Görselleri')
                     ->description('SliderSection için çoklu görsel yükleme alanı.')
                     ->schema([
                         FileUpload::make('event_images')
@@ -72,7 +79,7 @@ class SliderSettings extends Page implements HasForms
     {
         return [
             Action::make('save')
-                ->label('Save')
+                ->label('Kaydet')
                 ->action(fn (): mixed => $this->save()),
         ];
     }

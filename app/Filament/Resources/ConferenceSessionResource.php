@@ -8,6 +8,7 @@ use App\Filament\Resources\ConferenceSessionResource\Pages\ListConferenceSession
 use App\Models\Event;
 use App\Models\Session;
 use App\Models\Speaker;
+use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
@@ -27,33 +28,54 @@ class ConferenceSessionResource extends Resource
 {
     protected static ?string $model = Session::class;
 
-    protected static ?string $navigationLabel = 'Conference Sessions';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Konferans Bilgileri';
+
+    protected static ?string $navigationLabel = 'Konferans Oturumları';
+
+    protected static ?string $modelLabel = 'Konferans Oturumu';
+
+    protected static ?string $pluralModelLabel = 'Konferans Oturumları';
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Session Information')
+            Section::make('Oturum Bilgileri')
                 ->schema([
                     Select::make('event_id')
-                        ->label('Event')
+                        ->label('Etkinlik')
                         ->options(
                             Event::query()
                                 ->orderBy('order')
                                 ->pluck('title', 'id')
                                 ->all()
                         )
+                        ->required()
                         ->searchable()
                         ->preload(),
-                    TextInput::make('title')->required(),
-                    Textarea::make('description')->columnSpanFull(),
+                    TextInput::make('title')
+                        ->label('Oturum Başlığı')
+                        ->required()
+                        ->maxLength(255)
+                        ->columnSpan(2),
+                    Textarea::make('description')
+                        ->label('Açıklama')
+                        ->rows(5)
+                        ->columnSpanFull(),
                     DatePicker::make('date')
+                        ->label('Tarih')
                         ->native(false)
-                        ->displayFormat('Y-m-d'),
+                        ->displayFormat('Y-m-d')
+                        ->required(),
                     TimePicker::make('start_time')
+                        ->label('Başlangıç Saati')
                         ->seconds(false),
                     TimePicker::make('end_time')
+                        ->label('Bitiş Saati')
                         ->seconds(false),
                     Select::make('speakers')
+                        ->label('Konuşmacılar')
                         ->multiple()
                         ->options(
                             Speaker::query()
@@ -64,29 +86,34 @@ class ConferenceSessionResource extends Resource
                         )
                         ->searchable()
                         ->preload()
-                        ->default([]),
-                    TextInput::make('order')->numeric()->default(0),
-                    Toggle::make('is_active')->default(true),
+                        ->default([])
+                        ->columnSpanFull(),
+                    Toggle::make('is_active')
+                        ->label('Aktif')
+                        ->default(true),
                 ])
-                ->columns(2),
+                ->columns(4)
+                ->columnSpanFull(),
         ]);
     }
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
-            TextColumn::make('id')->sortable(),
-            TextColumn::make('event.title')->label('Event')->toggleable(),
-            TextColumn::make('title')->searchable(),
-            TextColumn::make('date')->sortable(),
-            TextColumn::make('start_time'),
-            TextColumn::make('end_time'),
-            TextColumn::make('order')->sortable(),
-            ToggleColumn::make('is_active'),
-        ])->recordActions([
-            EditAction::make(),
-            DeleteAction::make(),
-        ]);
+        return $table
+            ->defaultSort('date')
+            ->modifyQueryUsing(fn ($query) => $query->orderBy('date')->orderBy('start_time'))
+            ->columns([
+                TextColumn::make('id')->sortable(),
+                TextColumn::make('event.title')->label('Etkinlik')->toggleable(),
+                TextColumn::make('title')->label('Oturum Başlığı')->searchable(),
+                TextColumn::make('date')->label('Tarih')->sortable(),
+                TextColumn::make('start_time')->label('Başlangıç Saati'),
+                TextColumn::make('end_time')->label('Bitiş Saati'),
+                ToggleColumn::make('is_active')->label('Aktif'),
+            ])->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
+            ]);
     }
 
     public static function getPages(): array

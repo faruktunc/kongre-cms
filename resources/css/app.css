@@ -1,4 +1,32 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@layer base {
+    .prose table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .prose table th,
+    .prose table td {
+        border: 1px solid var(--color-gray-300);
+        padding: 0.5rem 0.75rem;
+    }
+
+    .prose table th {
+        background-color: var(--color-gray-100);
+        font-weight: 600;
+    }
+
+    .dark .prose table th,
+    .dark .prose table td {
+        border-color: var(--color-gray-600);
+    }
+
+    .dark .prose table th {
+        background-color: var(--color-gray-700);
+    }
+}
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
