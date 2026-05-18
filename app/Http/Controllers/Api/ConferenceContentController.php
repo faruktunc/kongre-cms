@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Board;
 use App\Models\ContactItem;
-use App\Models\Document;
 use App\Models\Event;
 use App\Models\Menu;
-use App\Models\PageComponent;
-use App\Models\Setting;
+use App\Models\Session;
 use App\Models\Speaker;
 use App\Models\Sponsor;
 use Illuminate\Http\JsonResponse;
@@ -27,63 +25,92 @@ class ConferenceContentController extends Controller
             ->values()
             ->all();
 
-        $socials = $this->setting('menu_socials', []);
-
         return response()->json([
-            'menus' => ['links' => $links, 'socials' => $socials],
+            'menus' => ['links' => $links, 'socials' => []],
             'links' => $links,
-            'socials' => is_array($socials) ? $socials : [],
+            'socials' => [],
         ]);
     }
 
     public function logo(): JsonResponse
     {
-        $logo = $this->setting('logo', ['src' => null, 'alt' => null]);
-
-        if (! is_array($logo)) {
-            return response()->json(['src' => null, 'alt' => null]);
-        }
-
-        $logo['src'] = $this->assetUrl($logo['src'] ?? null);
-
-        return response()->json($logo);
-    }
-
-    public function homeComponent(): JsonResponse
-    {
-        return response()->json($this->components('homeComponent'));
-    }
-
-    public function speakersComponent(): JsonResponse
-    {
-        return response()->json($this->components('speakersComponent'));
-    }
-
-    public function contactComponent(): JsonResponse
-    {
-        return response()->json($this->components('contactComponent'));
-    }
-
-    public function boardsComponent(): JsonResponse
-    {
-        return response()->json($this->components('boardsComponent'));
-    }
-
-    public function pdfComponent(): JsonResponse
-    {
-        return response()->json($this->components('pdfComponent'));
-    }
-
-    public function infoPDFComponent(): JsonResponse
-    {
-        return response()->json($this->components('infoPDFComponent'));
+        return response()->json([
+            'src' => '/assets/images/logo.png',
+            'alt' => 'Logo',
+        ]);
     }
 
     public function events(): JsonResponse
     {
         $event = Event::query()->active()->orderBy('order')->first();
 
-        return response()->json($event?->payload ?? []);
+        if (! $event) {
+            return response()->json([]);
+        }
+
+        $payload = is_array($event->payload) ? $event->payload : [];
+
+        return response()->json($this->eventIdentity(array_merge([
+            'title' => $event->title,
+            'description' => $event->description,
+            'date' => $event->date,
+            'location' => $event->location,
+        ], $payload)));
+    }
+
+    public function sessions(): JsonResponse
+    {
+        $speakers = Speaker::query()->active()->get()->keyBy('id');
+
+        $rows = Session::query()
+            ->active()
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->orderBy('order')
+            ->get();
+
+        return response()->json($rows->map(function (Session $row) use ($speakers): array {
+            $speakerIds = collect($this->normalizeArray($row->speakers))
+                ->map(fn (mixed $id): int => (int) $id)
+                ->filter(fn (int $id): bool => $id > 0)
+                ->values();
+
+            return [
+                'id' => $row->id,
+                'event_id' => $row->event_id,
+                'title' => $row->title,
+                'description' => $row->description,
+                'date' => $row->date,
+                'start_time' => $row->start_time,
+                'end_time' => $row->end_time,
+                'order' => $row->order,
+                'is_active' => $row->is_active,
+                'speakers' => $speakerIds
+                    ->map(function (int $speakerId) use ($speakers): ?array {
+                        /** @var Speaker|null $speaker */
+                        $speaker = $speakers->get($speakerId);
+
+                        if (! $speaker) {
+                            return null;
+                        }
+
+                        $payload = is_array($speaker->payload) ? $speaker->payload : [];
+
+                        return [
+                            'id' => $speaker->id,
+                            'name' => $payload['name'] ?? $speaker->name,
+                            'title' => $payload['title'] ?? $speaker->title,
+                            'company' => $payload['company'] ?? $speaker->company,
+                            'photo' => $this->assetUrl($speaker->photo ?? ($payload['photo'] ?? null)),
+                            'bio' => $payload['bio'] ?? $speaker->bio,
+                            'expertise' => $this->normalizeArray($payload['expertise'] ?? $speaker->expertise),
+                        ];
+                    })
+                    ->filter()
+                    ->values()
+                    ->all(),
+            ];
+        })->values()->all());
     }
 
     public function speakers(): JsonResponse
@@ -187,67 +214,13 @@ class ConferenceContentController extends Controller
         })->values()->all());
     }
 
-    public function pdfDocument(): JsonResponse
+    public function aboutConference(): JsonResponse
     {
-        $doc = Document::query()->active()->where('type', 'pdfDocument')->orderBy('order')->first();
-        if (! $doc) {
-            return response()->json([]);
-        }
+        $event = Event::query()->active()->orderBy('order')->first();
+        $payload = is_array($event?->payload) ? $event->payload : [];
+        $conferenceInfo = $payload['conference_info'] ?? [];
 
-        $fallback = [
-            'id' => $doc->id,
-            'title' => $doc->title,
-            'description' => $doc->description,
-            'url' => $this->assetUrl($doc->file_path),
-            'file_path' => $this->assetUrl($doc->file_path),
-            'type' => $doc->type,
-        ];
-
-        if (! is_array($doc->payload)) {
-            return response()->json($fallback);
-        }
-
-        $payload = $doc->payload;
-        $payload['url'] = $this->assetUrl($doc->file_path ?? ($payload['url'] ?? ($payload['file_path'] ?? null)));
-        $payload['file_path'] = $this->assetUrl($doc->file_path ?? ($payload['file_path'] ?? ($payload['url'] ?? null)));
-
-        return response()->json(array_merge($fallback, $payload));
-    }
-
-    public function infoPdf(): JsonResponse
-    {
-        $value = $this->setting('infoPdf', []);
-
-        return response()->json(is_array($value) ? $value : []);
-    }
-
-    public function conferenceInfo(): JsonResponse
-    {
-        $value = $this->setting('conferenceInfo', []);
-
-        return response()->json(is_array($value) ? $value : []);
-    }
-
-    private function components(string $key): array
-    {
-        return PageComponent::query()
-            ->where('component_key', $key)
-            ->active()
-            ->orderBy('order')
-            ->get()
-            ->map(fn (PageComponent $row) => $row->payload ?? [
-                'id' => $row->id,
-                'component' => $row->title,
-                'order' => $row->order,
-                'isActive' => $row->is_active,
-            ])
-            ->values()
-            ->all();
-    }
-
-    private function setting(string $key, mixed $default = null): mixed
-    {
-        return Setting::query()->where('key', $key)->value('value') ?? $default;
+        return response()->json(is_array($conferenceInfo) ? $conferenceInfo : []);
     }
 
     private function assetUrl(?string $path): ?string
@@ -325,5 +298,24 @@ class ConferenceContentController extends Controller
             'order' => $menu->order,
             'isActive' => $menu->is_active,
         ], is_array($payload) ? $payload : []);
+    }
+
+    private function eventIdentity(array $event): array
+    {
+        $images = collect($this->normalizeArray($event['images'] ?? []))
+            ->map(fn (mixed $path): ?string => is_string($path) ? $this->assetUrl($path) : null)
+            ->filter(fn (?string $path): bool => is_string($path) && $path !== '')
+            ->values()
+            ->all();
+
+        return [
+            'title' => $event['title'] ?? null,
+            'description' => $event['description'] ?? null,
+            'date' => $event['date'] ?? null,
+            'end_date' => $event['end_date'] ?? null,
+            'location' => $event['location'] ?? null,
+            'images' => $images,
+            'highlight_words' => $this->normalizeArray($event['highlight_words'] ?? []),
+        ];
     }
 }

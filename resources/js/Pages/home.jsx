@@ -1,32 +1,17 @@
-
-import React, { useEffect, useState } from "react";
-import DynamicComponent from "../Utils/dynamicComponent";
-import { getHomeComponent } from "../Services/apiClientServices";
+import React from "react";
 import MainLayout from "../Layout/main";
+import SliderSection from "../Components/Home/SliderSection";
+import AboutConference from "../Components/Home/AboutConference";
+import ProgramSection from "../Components/Home/ProgramSection";
+import SponsorsSection from "../Components/Home/SponsorsSection";
 
 export default function Home() {
-    const [components, setComponents] = useState([]);
-
-    useEffect(() => {
-        getHomeComponent().then((data) => {
-            if (Array.isArray(data)) {
-                const sorted = data.filter(item => item.isActive).sort((a,b) => a.order - b.order);
-                setComponents(sorted);
-            }
-        });
-    }, []);
-
     return (
-        <>
-            <MainLayout>
-                {components.map((comp) => (
-                    <DynamicComponent
-                        key={comp.id}
-                        name={comp.component}
-                        props={comp.props}
-                    />
-                ))}
-            </MainLayout>
-        </>
+        <MainLayout>
+            <SliderSection />
+            <AboutConference />
+            <ProgramSection />
+            <SponsorsSection />
+        </MainLayout>
     );
 }

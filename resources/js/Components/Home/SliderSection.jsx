@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getEvents } from "../../Services/apiClientServices";
 import {
-    MapPin,
     Calendar,
-    Users,
     ChevronLeft,
     ChevronRight,
 } from "react-feather";
@@ -45,6 +43,35 @@ export default function SliderSection() {
 
         return () => clearInterval(slideTimer);
     }, [event]);
+
+    useEffect(() => {
+        if (!event?.date) {
+            return;
+        }
+
+        const calculateTimeLeft = () => {
+            const now = new Date();
+            const targetDate = new Date(`${event.date}T00:00:00`);
+            const difference = targetDate.getTime() - now.getTime();
+
+            if (difference <= 0) {
+                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                return;
+            }
+
+            setTimeLeft({
+                days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+                minutes: Math.floor((difference / 1000 / 60) % 60),
+                seconds: Math.floor((difference / 1000) % 60),
+            });
+        };
+
+        calculateTimeLeft();
+        const countdownTimer = setInterval(calculateTimeLeft, 1000);
+
+        return () => clearInterval(countdownTimer);
+    }, [event?.date]);
 
     const nextSlide = () =>
         setCurrentSlide((prev) =>
@@ -131,7 +158,7 @@ export default function SliderSection() {
                                                 );
                                             })}
                                     </h1>
-                                    <p class="text-white font-bold text-lg text-shadow-lg/60">
+                                    <p className="text-white font-bold text-lg text-shadow-lg/60">
                                         {event.description}
                                     </p>
                                     <div className="flex items-center space-x-6 mb-8">
@@ -142,13 +169,6 @@ export default function SliderSection() {
                                                     event.date,
                                                     event.end_date
                                                 )}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center text-gray-100">
-                                            <Users className="w-5 h-5 mr-2 text-gray-700" />
-                                            <span className="font-bold text-lg text-shadow-lg/60">
-                                                {event.sessions?.length || 0}{" "}
-                                                Oturum
                                             </span>
                                         </div>
                                     </div>

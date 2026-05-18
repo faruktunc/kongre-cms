@@ -2,14 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\BoardResource\Pages\ManageBoards;
-use App\Filament\Resources\Concerns\HandlesJsonTextarea;
+use App\Filament\Resources\BoardResource\Pages\CreateBoard;
+use App\Filament\Resources\BoardResource\Pages\EditBoard;
+use App\Filament\Resources\BoardResource\Pages\ListBoards;
 use App\Models\Board;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -17,18 +20,27 @@ use Filament\Tables\Table;
 
 class BoardResource extends Resource
 {
-    use HandlesJsonTextarea;
-
     protected static ?string $model = Board::class;
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('name')->required(),
-            static::jsonTextarea('members', 'Members'),
-            TextInput::make('order')->numeric()->default(0),
-            Toggle::make('is_active')->default(true),
-            static::jsonTextarea('payload', 'Payload'),
+            Section::make('Board Information')
+                ->schema([
+                    TextInput::make('name')->required(),
+                    Repeater::make('members')
+                        ->schema([
+                            TextInput::make('name')->required(),
+                            TextInput::make('title'),
+                            TextInput::make('institution'),
+                            TextInput::make('order')->numeric(),
+                        ])
+                        ->columns(2)
+                        ->columnSpanFull(),
+                    TextInput::make('order')->numeric()->default(0),
+                    Toggle::make('is_active')->default(true),
+                ])
+                ->columns(2),
         ]);
     }
 
@@ -39,11 +51,18 @@ class BoardResource extends Resource
             TextColumn::make('name')->searchable(),
             TextColumn::make('order')->sortable(),
             ToggleColumn::make('is_active'),
-        ])->recordActions([EditAction::make(), DeleteAction::make()]);
+        ])->recordActions([
+            EditAction::make(),
+            DeleteAction::make(),
+        ]);
     }
 
     public static function getPages(): array
     {
-        return ['index' => ManageBoards::route('/')];
+        return [
+            'index' => ListBoards::route('/'),
+            'create' => CreateBoard::route('/create'),
+            'edit' => EditBoard::route('/{record}/edit'),
+        ];
     }
 }

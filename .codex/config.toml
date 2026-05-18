@@ -6,3 +6,4 @@ startup_timeout_sec = 20
 
 [mcp_servers.laravel-boost.tools.search-docs]
 approval_mode = "approve"
+

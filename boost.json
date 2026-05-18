@@ -1,6 +1,7 @@
 {
     "agents": [
-        "codex"
+        "codex",
+        "claude_code"
     ],
     "cloud": false,
     "guidelines": true,
@@ -14,6 +15,7 @@
         "laravel-best-practices",
         "pest-testing",
         "inertia-react-development",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "filament-5-best-practices"
     ]
 }

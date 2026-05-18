@@ -2,14 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\Concerns\HandlesJsonTextarea;
-use App\Filament\Resources\MenuResource\Pages\ManageMenus;
+use App\Filament\Resources\MenuResource\Pages\CreateMenu;
+use App\Filament\Resources\MenuResource\Pages\EditMenu;
+use App\Filament\Resources\MenuResource\Pages\ListMenus;
 use App\Models\Menu;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -17,20 +20,29 @@ use Filament\Tables\Table;
 
 class MenuResource extends Resource
 {
-    use HandlesJsonTextarea;
-
     protected static ?string $model = Menu::class;
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('title')->required(),
-            TextInput::make('slug'),
-            TextInput::make('url'),
-            TextInput::make('parent_id')->numeric(),
-            TextInput::make('order')->numeric()->default(0),
-            Toggle::make('is_active')->default(true),
-            static::jsonTextarea('payload', 'Payload'),
+            Section::make('Menu Item')
+                ->schema([
+                    TextInput::make('title')->required(),
+                    TextInput::make('slug'),
+                    TextInput::make('url'),
+                    Select::make('parent_id')
+                        ->label('Parent Menu')
+                        ->relationship('parent', 'title')
+                        ->searchable()
+                        ->preload()
+                        ->native(false),
+                    TextInput::make('order')->numeric()->default(0),
+                    Toggle::make('is_active')->default(true),
+                    Toggle::make('payload.show')
+                        ->label('Show')
+                        ->default(true),
+                ])
+                ->columns(2),
         ]);
     }
 
@@ -44,11 +56,18 @@ class MenuResource extends Resource
                 TextColumn::make('order')->sortable(),
                 ToggleColumn::make('is_active'),
             ])
-            ->recordActions([EditAction::make(), DeleteAction::make()]);
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make(),
+            ]);
     }
 
     public static function getPages(): array
     {
-        return ['index' => ManageMenus::route('/')];
+        return [
+            'index' => ListMenus::route('/'),
+            'create' => CreateMenu::route('/create'),
+            'edit' => EditMenu::route('/{record}/edit'),
+        ];
     }
 }

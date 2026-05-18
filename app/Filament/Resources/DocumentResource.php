@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\Concerns\HandlesJsonTextarea;
-use App\Filament\Resources\DocumentResource\Pages\ManageDocuments;
+use App\Filament\Resources\DocumentResource\Pages\CreateDocument;
+use App\Filament\Resources\DocumentResource\Pages\EditDocument;
+use App\Filament\Resources\DocumentResource\Pages\ListDocuments;
 use App\Models\Document;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -19,20 +22,31 @@ use Filament\Tables\Table;
 
 class DocumentResource extends Resource
 {
-    use HandlesJsonTextarea;
-
     protected static ?string $model = Document::class;
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('title')->required(),
-            Textarea::make('description'),
-            FileUpload::make('file_path')->disk('public')->directory('documents')->visibility('public'),
-            TextInput::make('type'),
-            TextInput::make('order')->numeric()->default(0),
-            Toggle::make('is_active')->default(true),
-            static::jsonTextarea('payload', 'Payload'),
+            Section::make('Document')
+                ->schema([
+                    TextInput::make('title')->required(),
+                    Textarea::make('description'),
+                    Select::make('type')
+                        ->options([
+                            'document' => 'Document',
+                        ])
+                        ->native(false)
+                        ->required(),
+                    FileUpload::make('file_path')
+                        ->label('File')
+                        ->disk('public')
+                        ->directory('documents')
+                        ->visibility('public')
+                        ->acceptedFileTypes(['application/pdf']),
+                    TextInput::make('order')->numeric()->default(0),
+                    Toggle::make('is_active')->default(true),
+                ])
+                ->columns(2),
         ]);
     }
 
@@ -44,11 +58,18 @@ class DocumentResource extends Resource
             TextColumn::make('type'),
             TextColumn::make('order')->sortable(),
             ToggleColumn::make('is_active'),
-        ])->recordActions([EditAction::make(), DeleteAction::make()]);
+        ])->recordActions([
+            EditAction::make(),
+            DeleteAction::make(),
+        ]);
     }
 
     public static function getPages(): array
     {
-        return ['index' => ManageDocuments::route('/')];
+        return [
+            'index' => ListDocuments::route('/'),
+            'create' => CreateDocument::route('/create'),
+            'edit' => EditDocument::route('/{record}/edit'),
+        ];
     }
 }

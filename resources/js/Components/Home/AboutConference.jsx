@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getConferenceInfo } from "../../Services/apiClientServices";
+import { getAboutConference } from "../../Services/apiClientServices";
 import { Users, Star, BookOpen } from "lucide-react";
 
 const AboutConference = () => {
   const [conferenceInfo, setConferenceInfo] = useState(null);
 
   useEffect(() => {
-    getConferenceInfo().then((data) => setConferenceInfo(data));
+    getAboutConference().then((data) => setConferenceInfo(data));
   }, []);
 
   if (!conferenceInfo) return null;
@@ -32,7 +32,7 @@ const AboutConference = () => {
 
         {/* Highlights */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
-          {conferenceInfo.highlights.map((highlight, index) => (
+          {(conferenceInfo.highlights ?? []).map((highlight, index) => (
             <div
               key={index}
               className="flex flex-col items-center bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"

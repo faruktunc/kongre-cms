@@ -1,26 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { getEvents, getSpeakers } from "../../Services/apiClientServices";
+import { getSessions } from "../../Services/apiClientServices";
 import { Clock } from "lucide-react";
 
 const ProgramSection = () => {
-  const [event, setEvent] = useState(null);
-  const [speakers, setSpeakers] = useState([]);
+  const [sessions, setSessions] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
 
  useEffect(() => {
     const fetchData = async () => {
       try {
-        const [eventData, speakersData] = await Promise.all([
-          getEvents(),
-          getSpeakers()
-        ]);
-        
-        console.log('Speakers Data:', speakersData);
-        setSpeakers(speakersData || []);
-        
-        setEvent(eventData);
-        if (eventData && eventData.sessions.length > 0) {
-          const uniqueDates = [...new Set(eventData.sessions.map(s => s.date))].sort();
+        const sessionsData = await getSessions();
+
+        setSessions(sessionsData || []);
+        if (sessionsData?.length > 0) {
+          const uniqueDates = [...new Set(sessionsData.map(s => s.date))].sort();
           setSelectedDate(uniqueDates[0]);
         }
       } catch (error) {
@@ -31,11 +24,9 @@ const ProgramSection = () => {
     fetchData();
   }, []);
 
-  if (!event) return null;
-
-  const uniqueDates = [...new Set(event.sessions.map(s => s.date))].sort();
+  const uniqueDates = [...new Set(sessions.map(s => s.date))].sort();
   const filteredSessions = selectedDate
-    ? event.sessions.filter(s => s.date === selectedDate)
+    ? sessions.filter(s => s.date === selectedDate)
     : [];
 
   const formatDate = (dateStr) => {
@@ -73,9 +64,7 @@ const ProgramSection = () => {
 
         <div className="space-y-6">
           {filteredSessions.map((session) => {
-            const sessionSpeakers = session.speakers
-              .map(id => speakers.find(s => s.id == id))
-              .filter(Boolean);
+            const sessionSpeakers = Array.isArray(session.speakers) ? session.speakers : [];
 
             return (
               <div

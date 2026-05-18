@@ -1,0 +1,538 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://filamentphp.com/docs/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Testing resources
+
+export const EditOnGitHub = ({version, path}) => {
+  const url = `https://github.com/filamentphp/filament/edit/${version}/${path}`;
+  return <div className="not-prose mt-16">
+      <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+        </svg>
+        Edit this page on GitHub
+      </a>
+    </div>;
+};
+
+export const Footer = () => {
+  const sponsorsByTier = JSON.parse(`{
+  "agency_partner": [
+    {
+      "name": "Kirschbaum",
+      "url": "https://kirschbaumdevelopment.com/solutions/filament-development",
+      "filename": "kirschbaum.svg"
+    }
+  ],
+  "gold": [
+    {
+      "name": "Agiledrop",
+      "url": "https://www.agiledrop.com/laravel?utm_source=filament",
+      "filename": "agiledrop.svg"
+    },
+    {
+      "name": "Baiz.ai",
+      "url": "https://baiz.ai",
+      "filename": "baiz-ai.svg"
+    },
+    {
+      "name": "CMS Max",
+      "url": "https://cmsmax.com?ref=filamentphp.com",
+      "filename": "cms-max.svg"
+    },
+    {
+      "name": "Mailtrap",
+      "url": "https://mailtrap.io/email-sending?utm_source=community&utm_medium=referral&utm_campaign=filament",
+      "filename": "mailtrap.svg"
+    },
+    {
+      "name": "SerpApi",
+      "url": "https://serpapi.com/?utm_source=filamentphp",
+      "filename": "serpapi.svg"
+    }
+  ]
+}`);
+  function shuffleArray(items) {
+    const result = [...items];
+    for (let index = result.length - 1; index > 0; index--) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      [result[index], result[randomIndex]] = [result[randomIndex], result[index]];
+    }
+    return result;
+  }
+  const sponsors = Object.entries(sponsorsByTier).flatMap(([, sponsors]) => shuffleArray(sponsors));
+  return <div className="mt-16 flex flex-col gap-4">
+      <h2 className="text-center text-2xl font-medium text-gray-800 dark:text-gray-200">
+        Sponsored by
+      </h2>
+
+      <div className="not-prose flex flex-wrap items-center justify-center gap-5">
+        {sponsors.map(sponsor => <a key={sponsor.name} className="footer-sponsor-card" href={sponsor.url} target="_blank" title={sponsor.name}>
+            <img src={`/docs/images/sponsors/footer/${sponsor.filename}`} alt={sponsor.name} noZoom />
+            <span className="line-pattern-overlay line-pattern-80" />
+          </a>)}
+
+        <a href="https://github.com/sponsors/danharrin" target="_blank" className="footer-sponsor-cta">
+          <span className="sponsor-cta-content">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+            <span>Your logo here</span>
+          </span>
+          <span className="line-pattern-overlay line-pattern-60" />
+        </a>
+      </div>
+    </div>;
+};
+
+## Authenticating as a user
+
+Ensure that you are authenticated to access the app in your `TestCase`:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Models\User;
+
+protected function setUp(): void
+{
+    parent::setUp();
+
+    $this->actingAs(User::factory()->create());
+}
+```
+
+Alternatively, if you are using Pest you can use a `beforeEach()` function at the top of your test file to authenticate:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Models\User;
+
+beforeEach(function () {
+    $user = User::factory()->create();
+
+    actingAs($user);
+});
+```
+
+## Testing a resource list page
+
+To test if the list page is able to load, test the list page as a Livewire component, and call `assertOk()` to ensure that the HTTP response was 200 OK. You can also use the `assertCanSeeTableRecords()` method to check if records are being displayed in the table:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Models\User;
+
+it('can load the page', function () {
+    $users = User::factory()->count(5)->create();
+
+    livewire(ListUsers::class)
+        ->assertOk()
+        ->assertCanSeeTableRecords($users);
+});
+```
+
+To test the table on the list page, you should visit the [Testing tables](./testing-tables) section. To test any actions in the header of the page or actions in the table, you should visit the [Testing actions](./testing-actions) section. Below are some common examples of other tests that you can run on the list page.
+
+To [test that the table search is working](./testing-tables#testing-that-a-column-can-be-searched), you can use the `searchTable()` method to search for a specific record. You can also use the `assertCanSeeTableRecords()` and `assertCanNotSeeTableRecords()` methods to check if the correct records are being displayed in the table:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Models\User;
+
+it('can search users by `name` or `email`', function () {
+    $users = User::factory()->count(5)->create();
+
+    livewire(ListUsers::class)
+        ->assertCanSeeTableRecords($users)
+        ->searchTable($users->first()->name)
+        ->assertCanSeeTableRecords($users->take(1))
+        ->assertCanNotSeeTableRecords($users->skip(1))
+        ->searchTable($users->last()->email)
+        ->assertCanSeeTableRecords($users->take(-1))
+        ->assertCanNotSeeTableRecords($users->take($users->count() - 1));
+});
+```
+
+To [test that the table sorting is working](./testing-tables#testing-that-a-column-can-be-sorted), you can use the `sortTable()` method to sort the table by a specific column. You can also use the `assertCanSeeTableRecords()` method to check if the records are being displayed in the correct order:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Models\User;
+
+it('can sort users by `name`', function () {
+    $users = User::factory()->count(5)->create();
+
+    livewire(ListUsers::class)
+        ->assertCanSeeTableRecords($users)
+        ->sortTable('name')
+        ->assertCanSeeTableRecords($users->sortBy('name'), inOrder: true)
+        ->sortTable('name', 'desc')
+        ->assertCanSeeTableRecords($users->sortByDesc('name'), inOrder: true);
+});
+```
+
+To [test that the table filtering is working](./testing-tables#testing-filters), you can use the `filterTable()` method to filter the table by a specific column. You can also use the `assertCanSeeTableRecords()` and `assertCanNotSeeTableRecords()` methods to check if the correct records are being displayed in the table:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Models\User;
+
+it('can filter users by `locale`', function () {
+    $users = User::factory()->count(5)->create();
+
+    livewire(ListUsers::class)
+        ->assertCanSeeTableRecords($users)
+        ->filterTable('locale', $users->first()->locale)
+        ->assertCanSeeTableRecords($users->where('locale', $users->first()->locale))
+        ->assertCanNotSeeTableRecords($users->where('locale', '!=', $users->first()->locale));
+});
+```
+
+To [test that the table bulk actions are working](./testing-actions#testing-table-bulk-actions), you can use the `selectTableRecords()` method to select multiple records in the table. You can also use the `callAction()` method to call a specific action on the selected records:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Models\User;
+use Filament\Actions\Testing\TestAction;
+use function Pest\Laravel\assertDatabaseMissing;
+
+it('can bulk delete users', function () {
+    $users = User::factory()->count(5)->create();
+
+    livewire(ListUsers::class)
+        ->assertCanSeeTableRecords($users)
+        ->selectTableRecords($users)
+        ->callAction(TestAction::make(DeleteBulkAction::class)->table()->bulk())
+        ->assertNotified()
+        ->assertCanNotSeeTableRecords($users);
+
+    $users->each(fn (User $user) => assertDatabaseMissing($user));
+});
+```
+
+## Testing a resource create page
+
+To test if the create page is able to load, test the create page as a Livewire component, and call `assertOk()` to ensure that the HTTP response was 200 OK:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\CreateUser;
+use App\Models\User;
+
+it('can load the page', function () {
+    livewire(CreateUser::class)
+        ->assertOk();
+});
+```
+
+To test the form on the create page, you should visit the [Testing schemas](./testing-schemas) section. To test any actions in the header of the page or in the form, you should visit the [Testing actions](./testing-actions) section. Below are some common examples of other tests that you can run on the create page.
+
+To test that the form is creating records correctly, you can use the `fillForm()` method to fill in the form fields, and then use the `call('create')` method to create the record. You can also use the `assertNotified()` method to check if a notification was displayed, and the `assertRedirect()` method to check if the user was redirected to another page:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\CreateUser;
+use App\Models\User;
+use function Pest\Laravel\assertDatabaseHas;
+
+it('can create a user', function () {
+    $newUserData = User::factory()->make();
+
+    livewire(CreateUser::class)
+        ->fillForm([
+            'name' => $newUserData->name,
+            'email' => $newUserData->email,
+        ])
+        ->call('create')
+        ->assertNotified()
+        ->assertRedirect();
+
+    assertDatabaseHas(User::class, [
+        'name' => $newUserData->name,
+        'email' => $newUserData->email,
+    ]);
+});
+```
+
+To test that the form is validating properly, you can use the `fillForm()` method to fill in the form fields, and then use the `call('create')` method to create the record. You can also use the `assertHasFormErrors()` method to check if the form has any errors, and the `assertNotNotified()` method to check if no notification was displayed. You can also use the `assertNoRedirect()` method to check if the user was not redirected to another page. In this example, we use a [Pest dataset](https://pestphp.com/docs/datasets#content-bound-datasets) to test multiple rules without having to repeat the test code:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\CreateUser;
+use App\Models\User;
+use Illuminate\Support\Str;
+
+it('validates the form data', function (array $data, array $errors) {
+    $newUserData = User::factory()->make();
+
+    livewire(CreateUser::class)
+        ->fillForm([
+            'name' => $newUserData->name,
+            'email' => $newUserData->email,
+            ...$data,
+        ])
+        ->call('create')
+        ->assertHasFormErrors($errors)
+        ->assertNotNotified()
+        ->assertNoRedirect();
+})->with([
+    '`name` is required' => [['name' => null], ['name' => 'required']],
+    '`name` is max 255 characters' => [['name' => Str::random(256)], ['name' => 'max']],
+    '`email` is a valid email address' => [['email' => Str::random()], ['email' => 'email']],
+    '`email` is required' => [['email' => null], ['email' => 'required']],
+    '`email` is max 255 characters' => [['email' => Str::random(256)], ['email' => 'max']],
+]);
+```
+
+## Testing a resource edit page
+
+To test if the edit page is able to load, test the edit page as a Livewire component, and call `assertOk()` to ensure that the HTTP response was 200 OK. You can also use the `assertSchemaStateSet()` method to check if the form fields are set to the correct values:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\EditUser;
+use App\Models\User;
+
+it('can load the page', function () {
+    $user = User::factory()->create();
+
+    livewire(EditUser::class, [
+        'record' => $user->id,
+    ])
+        ->assertOk()
+        ->assertSchemaStateSet([
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
+});
+```
+
+To test the form on the edit page, you should visit the [Testing schemas](./testing-schemas) section. To test any actions in the header of the page or in the form, you should visit the [Testing actions](./testing-actions) section. Below are some common examples of other tests that you can run on the edit page.
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\EditUser;
+use App\Models\User;
+use function Pest\Laravel\assertDatabaseHas;
+
+it('can update a user', function () {
+    $user = User::factory()->create();
+
+    $newUserData = User::factory()->make();
+
+    livewire(EditUser::class, [
+        'record' => $user->id,
+    ])
+        ->fillForm([
+            'name' => $newUserData->name,
+            'email' => $newUserData->email,
+        ])
+        ->call('save')
+        ->assertNotified();
+
+    assertDatabaseHas(User::class, [
+        'id' => $user->id,
+        'name' => $newUserData->name,
+        'email' => $newUserData->email,
+    ]);
+});
+```
+
+To test that the form is validating properly, you can use the `fillForm()` method to fill in the form fields, and then use the `call('save')` method to save the record. You can also use the `assertHasFormErrors()` method to check if the form has any errors, and the `assertNotNotified()` method to check if no notification was displayed. In this example, we use a [Pest dataset](https://pestphp.com/docs/datasets#content-bound-datasets) to test multiple rules without having to repeat the test code:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\EditUser;
+use App\Models\User;
+use Illuminate\Support\Str;
+
+it('validates the form data', function (array $data, array $errors) {
+    $user = User::factory()->create();
+
+    $newUserData = User::factory()->make();
+
+    livewire(EditUser::class, [
+        'record' => $user->id,
+    ])
+        ->fillForm([
+            'name' => $newUserData->name,
+            'email' => $newUserData->email,
+            ...$data,
+        ])
+        ->call('save')
+        ->assertHasFormErrors($errors)
+        ->assertNotNotified();
+})->with([
+    '`name` is required' => [['name' => null], ['name' => 'required']],
+    '`name` is max 255 characters' => [['name' => Str::random(256)], ['name' => 'max']],
+    '`email` is a valid email address' => [['email' => Str::random()], ['email' => 'email']],
+    '`email` is required' => [['email' => null], ['email' => 'required']],
+    '`email` is max 255 characters' => [['email' => Str::random(256)], ['email' => 'max']],
+]);
+```
+
+To [test that an action is working](./testing-actions), such as the `DeleteAction`, you can use the `callAction()` method to call the delete action. You can also use the `assertNotified()` method to check if a notification was displayed, and the `assertRedirect()` method to check if the user was redirected to another page:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\EditUser;
+use App\Models\User;
+use Filament\Actions\DeleteAction;
+use function Pest\Laravel\assertDatabaseMissing;
+
+it('can delete a user', function () {
+    $user = User::factory()->create();
+
+    livewire(EditUser::class, [
+        'record' => $user->id,
+    ])
+        ->callAction(DeleteAction::class)
+        ->assertNotified()
+        ->assertRedirect();
+
+    assertDatabaseMissing($user);
+});
+```
+
+## Testing a resource view page
+
+To test if the view page is able to load, test the view page as a Livewire component, and call `assertOk()` to ensure that the HTTP response was 200 OK. You can also use the `assertSchemaStateSet()` method to check if the infolist entries are set to the correct values:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\ViewUser;
+use App\Models\User;
+
+it('can load the page', function () {
+    $user = User::factory()->create();
+
+    livewire(ViewUser::class, [
+        'record' => $user->id,
+    ])
+        ->assertOk()
+        ->assertSchemaStateSet([
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
+});
+```
+
+To test the infolist on the view page, you should visit the [Testing schemas](./testing-schemas) section. To test any actions in the header of the page or in the infolist, you should visit the [Testing actions](./testing-actions) section.
+
+## Testing relation managers
+
+To test if a relation manager is rendered on a page, such as the edit page of a resource, you can use the `assertSeeLivewire()` method to check if the relation manager is being rendered:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\EditUser;
+use App\Filament\Resources\Users\RelationManagers\PostsRelationManager;
+use App\Models\User;
+
+it('can load the relation manager', function () {
+    $user = User::factory()->create();
+
+    livewire(EditUser::class, [
+        'record' => $user->id,
+    ])
+        ->assertSeeLivewire(PostsRelationManager::class);
+});
+```
+
+Since relation managers are Livewire components, you can also test a relation manager's functionality itself, like its ability to load successfully with a 200 OK response, with the correct records in the table. When testing a relation manager, you need to pass in the `ownerRecord`, which is the record from the resource you are inside, and the `pageClass`, which is the class of the page you are on:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\EditUser;
+use App\Filament\Resources\Users\RelationManagers\PostsRelationManager;
+use App\Models\Post;
+use App\Models\User;
+
+it('can load the relation manager', function () {
+    $user = User::factory()
+        ->has(Post::factory()->count(5))
+        ->create();
+
+    livewire(PostsRelationManager::class, [
+        'ownerRecord' => $user,
+        'pageClass' => EditUser::class,
+    ])
+        ->assertOk()
+        ->assertCanSeeTableRecords($user->posts);
+});
+```
+
+You can [test searching](./testing-tables#testing-that-a-column-can-be-searched), [sorting](./testing-tables#testing-that-a-column-can-be-sorted), and [filtering](./testing-tables#testing-filters) in the same way as you would on a resource list page.
+
+You can also [test actions](./testing-actions), for example, the `CreateAction` in the header of the table:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\EditUser;
+use App\Filament\Resources\Users\RelationManagers\PostsRelationManager;
+use App\Models\Post;
+use App\Models\User;
+use Filament\Actions\Testing\TestAction;
+use function Pest\Laravel\assertDatabaseHas;
+
+it('can create a post', function () {
+    $user = User::factory()->create();
+
+    $newPostData = Post::factory()->make();
+
+    livewire(PostsRelationManager::class, [
+        'ownerRecord' => $user,
+        'pageClass' => EditUser::class,
+    ])
+        ->callAction(TestAction::make(CreateAction::class)->table(), [
+            'title' => $newPostData->title,
+            'content' => $newPostData->content,
+        ])
+        ->assertNotified();
+
+    assertDatabaseHas(Post::class, [
+        'title' => $newPostData->title,
+        'content' => $newPostData->content,
+        'user_id' => $user->id,
+    ]);
+});
+```
+
+## Testing create / edit page `getFormActions()`
+
+When testing actions in `getFormActions()` on a resource page, use the `schemaComponent()` method targeting the `form-actions` key in the `content` schema. For example, if you have a custom `Action::make('createAndVerifyEmail')` action in the `getFormActions()` method of your `CreateUser` page, you can test it like this:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use App\Filament\Resources\Users\Pages\CreateUser;
+use App\Models\User;
+use Filament\Actions\Testing\TestAction;
+
+it('can create a user and verify their email address', function () {
+    livewire(CreateUser::class)
+        ->fillForm([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ])
+        ->callAction(TestAction::make('createAndVerifyEmail')->schemaComponent('form-actions', schema: 'content'));
+
+    expect(User::query()->where('email', 'test@example.com')->first())
+        ->hasVerifiedEmail()->toBeTrue();
+});
+```
+
+## Testing multiple panels
+
+If you have multiple panels and you would like to test a non-default panel, you will need to tell Filament which panel you are testing. This can be done in the `setUp()` method of the test case, or you can do it at the start of a particular test. Filament usually does this in a middleware when you access the panel through a request, so if you're not making a request in your test like when testing a Livewire component, you need to set the current panel manually:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use Filament\Facades\Filament;
+
+Filament::setCurrentPanel('app'); // Where `app` is the ID of the panel you want to test.
+```
+
+## Testing multi-tenant panels
+
+When testing resources in multi-tenant panels, you may need to call `Filament::bootCurrentPanel()` after setting the tenant in order to apply tenant scopes and model event listeners:
+
+```php theme={"theme":"gruvbox-dark-hard"}
+use Filament\Facades\Filament;
+
+$team = Team::factory()->create();
+
+Filament::setTenant($this->team);
+Filament::setCurrentPanel('admin');
+Filament::bootCurrentPanel();
+```
+
+<EditOnGitHub version="5.x" path="docs/10-testing/02-testing-resources.md" />
+
+<Footer />

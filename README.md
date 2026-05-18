@@ -80,3 +80,14 @@ Environment:
 
 Note:
 - `json-server` is no longer required for runtime CMS/API data flow.
+
+## CMS Kullanım Notu
+
+- Admin panel: `/admin`
+- İçerik yönetimi menüleri:
+  - `Menus`: site navigasyonu
+  - `Speakers`, `Sponsors`, `Boards`, `Documents`, `Contact Items`: içerik CRUD
+  - `Conference Settings`: logo, konferans başlık/alt başlık, tarih/konum, program öğeleri (singleton)
+- Speaker/Sponsor/Document upload alanları `public` disk üzerinde sırasıyla `speakers`, `sponsors`, `documents` klasörlerine kaydeder.
+- Etkinlik/program yönetimi artık liste CRUD yerine `Conference Settings` sayfasından tek kayıt (singleton) mantığı ile yapılır.
+- Admin panelde ham JSON yazma gereksinimi kaldırılmıştır; formlar typed alanlarla düzenlenir.
