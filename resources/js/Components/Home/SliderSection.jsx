@@ -39,7 +39,7 @@ export default function SliderSection() {
 
         const slideTimer = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % event.images.length);
-        }, 5000); 
+        }, 5000);
 
         return () => clearInterval(slideTimer);
     }, [event]);
@@ -163,8 +163,8 @@ export default function SliderSection() {
                                     </p>
                                     <div className="flex items-center space-x-6 mb-8">
                                         <div className="flex items-center text-gray-100">
-                                            <Calendar className="w-5 h-5 mr-2 text-gray-700" />
-                                            <span className="font-bold text-lg text-shadow-lg/60">
+                                            <Calendar className="w-6 h-6 mr-2 text-red-600" />
+                                            <span className="font-bold text-2xl md:text-3xl text-red-600 text-shadow-lg/60">
                                                 {formatDate(
                                                     event.date,
                                                     event.end_date

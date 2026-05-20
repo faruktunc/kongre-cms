@@ -9,7 +9,7 @@ export default function Home() {
     return (
         <MainLayout>
             <SliderSection />
-            <AboutConference />
+            {/*<AboutConference />*/}
             <ProgramSection />
             <SponsorsSection />
         </MainLayout>

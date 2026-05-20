@@ -36,6 +36,10 @@ class ConferenceAboutSettings extends Page implements HasForms
     {
         return 'Konferans Hakkında';
     }
+    public static function canAccess(): bool
+    {
+        return false;
+    }
 
     public function mount(): void
     {

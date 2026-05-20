@@ -20,7 +20,7 @@ class ConferenceSettings extends Page implements HasForms
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $navigationLabel = 'Konferans Ayarları';
+    protected static ?string $navigationLabel = 'Kongre Ayarları';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Ana Sayfa Ayarları';
 
