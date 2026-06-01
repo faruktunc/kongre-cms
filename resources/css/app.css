@@ -1,30 +1,69 @@
 @import "tailwindcss";
+@import "../../vendor/filament/support/resources/css/utilities.css";
 @plugin "@tailwindcss/typography";
 
 @layer base {
-    .prose table {
+    .prose table,
+    .fi-prose table {
         border-collapse: collapse;
         width: 100%;
     }
 
     .prose table th,
-    .prose table td {
+    .prose table td,
+    .fi-prose table th,
+    .fi-prose table td {
         border: 1px solid var(--color-gray-300);
         padding: 0.5rem 0.75rem;
+        overflow-wrap: anywhere;
+        vertical-align: top;
+        word-break: break-word;
     }
 
-    .prose table th {
+    .prose table th,
+    .fi-prose table th {
         background-color: var(--color-gray-100);
         font-weight: 600;
     }
 
     .dark .prose table th,
-    .dark .prose table td {
+    .dark .prose table td,
+    .dark .fi-prose table th,
+    .dark .fi-prose table td {
         border-color: var(--color-gray-600);
     }
 
-    .dark .prose table th {
+    .dark .prose table th,
+    .dark .fi-prose table th {
         background-color: var(--color-gray-700);
+    }
+}
+
+@layer utilities {
+    .fi-prose table th,
+    .fi-prose table td {
+        padding: 0.5rem 0.75rem;
+        vertical-align: top;
+    }
+
+    .fi-prose table th:first-child,
+    .fi-prose table td:first-child {
+        padding-inline-start: 0.75rem !important;
+    }
+
+    .fi-prose table th:last-child,
+    .fi-prose table td:last-child {
+        padding-inline-end: 0.75rem !important;
+    }
+
+    .fi-prose tbody td:first-child,
+    .fi-prose tfoot td:first-child {
+        padding-inline-start: 0.75rem !important;
+    }
+
+    .fi-prose tbody td:last-child,
+    .fi-prose tfoot td:last-child {
+        padding-inline-end: 0.75rem !important;
     }
 }
 

@@ -99,7 +99,7 @@ export default function DynamicPage({ pageSlug }) {
                             {hasRichContent ? (
                                 <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
                                     <div
-                                        className="prose max-w-none dark:prose-invert"
+                                        className="fi-prose max-w-none"
                                         dangerouslySetInnerHTML={{ __html: page.content }}
                                     />
                                 </section>

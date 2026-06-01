@@ -7,10 +7,19 @@ use App\Http\Requests\StoreContactMessageRequest;
 use App\Models\Board;
 use App\Models\ContactMessage;
 use App\Models\Event;
+use App\Models\HomePopup;
 use App\Models\Page;
 use App\Models\Session;
 use App\Models\Speaker;
 use App\Models\Sponsor;
+use Awcodes\RicherEditor\Plugins\EmbedPlugin;
+use Awcodes\RicherEditor\Plugins\EmojiPlugin;
+use Awcodes\RicherEditor\Plugins\IdPlugin;
+use Awcodes\RicherEditor\Plugins\LinkPlugin;
+use DOMDocument;
+use DOMElement;
+use DOMXPath;
+use Filament\Forms\Components\RichEditor\RichContentRenderer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
@@ -300,6 +309,26 @@ class ConferenceContentController extends Controller
         return response()->json(is_array($conferenceInfo) ? $conferenceInfo : []);
     }
 
+    public function homePopups(): JsonResponse
+    {
+        $rows = HomePopup::query()
+            ->active()
+            ->orderBy('order')
+            ->orderBy('id')
+            ->get();
+
+        return response()->json($rows->map(fn (HomePopup $row): array => [
+            'id' => $row->id,
+            'title' => $row->title,
+            'message' => $row->message,
+            'bannerImage' => $this->assetUrl($row->banner_image),
+            'buttonLabel' => $row->button_label,
+            'buttonUrl' => $row->button_url,
+            'order' => $row->order,
+            'isActive' => $row->is_active,
+        ])->values()->all());
+    }
+
     private function assetUrl(?string $path): ?string
     {
         if ($path === null || trim($path) === '') {
@@ -396,7 +425,7 @@ class ConferenceContentController extends Controller
             'name' => $page->title,
             'title' => $page->title,
             'subtitle' => $page->subtitle,
-            'content' => $page->content,
+            'content' => $this->renderRichContent($page->content),
             'gallery' => $gallery,
             'documents' => $documents,
             'slug' => $page->slug,
@@ -424,5 +453,236 @@ class ConferenceContentController extends Controller
             'images' => $images,
             'highlight_words' => $this->normalizeArray($event['highlight_words'] ?? []),
         ];
+    }
+
+    private function renderRichContent(mixed $content): ?string
+    {
+        if (blank($content)) {
+            return null;
+        }
+
+        if (! is_string($content) && ! is_array($content)) {
+            return null;
+        }
+
+        $html = RichContentRenderer::make($content)
+            ->plugins([
+                EmbedPlugin::make(),
+                EmojiPlugin::make(),
+                IdPlugin::make(),
+                LinkPlugin::make(),
+            ])
+            ->toHtml();
+
+        if (! is_array($content)) {
+            return $html;
+        }
+
+        return $this->applyRichContentTableColumnWidths($html, $content);
+    }
+
+    private function applyRichContentTableColumnWidths(string $html, array $content): string
+    {
+        $tableWidths = $this->extractRichContentTableWidths($content);
+
+        if ($tableWidths === []) {
+            return $html;
+        }
+
+        $document = new DOMDocument('1.0', 'UTF-8');
+        $previousErrors = libxml_use_internal_errors(true);
+        $document->loadHTML(
+            '<?xml encoding="utf-8" ?><div id="rich-content-root">'.$html.'</div>',
+            LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED,
+        );
+        libxml_clear_errors();
+        libxml_use_internal_errors($previousErrors);
+
+        $xpath = new DOMXPath($document);
+        $tables = $xpath->query('//*[@id="rich-content-root"]//table');
+
+        if ($tables === false) {
+            return $html;
+        }
+
+        foreach ($tables as $tableIndex => $table) {
+            if (! $table instanceof DOMElement || ! isset($tableWidths[$tableIndex])) {
+                continue;
+            }
+
+            $this->applyWidthsToTableElement($xpath, $table, $tableWidths[$tableIndex]);
+        }
+
+        $root = $document->getElementById('rich-content-root');
+
+        if (! $root instanceof DOMElement) {
+            return $html;
+        }
+
+        $output = '';
+
+        foreach ($root->childNodes as $childNode) {
+            $output .= $document->saveHTML($childNode);
+        }
+
+        return $output;
+    }
+
+    /**
+     * @return array<int, array<int, int>>
+     */
+    private function extractRichContentTableWidths(array $node): array
+    {
+        $tables = [];
+
+        $this->collectRichContentTableWidths($node, $tables);
+
+        return $tables;
+    }
+
+    /**
+     * @param  array<int, array<int, int>>  $tables
+     */
+    private function collectRichContentTableWidths(array $node, array &$tables): void
+    {
+        if (($node['type'] ?? null) === 'table') {
+            $tables[] = $this->extractTableWidths($node);
+
+            return;
+        }
+
+        foreach ($node['content'] ?? [] as $childNode) {
+            if (is_array($childNode)) {
+                $this->collectRichContentTableWidths($childNode, $tables);
+            }
+        }
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private function extractTableWidths(array $tableNode): array
+    {
+        $widths = [];
+
+        foreach ($tableNode['content'] ?? [] as $rowNode) {
+            if (! is_array($rowNode) || ($rowNode['type'] ?? null) !== 'tableRow') {
+                continue;
+            }
+
+            $columnIndex = 0;
+
+            foreach ($rowNode['content'] ?? [] as $cellNode) {
+                if (! is_array($cellNode)) {
+                    continue;
+                }
+
+                $attrs = is_array($cellNode['attrs'] ?? null) ? $cellNode['attrs'] : [];
+                $colspan = max(1, (int) ($attrs['colspan'] ?? 1));
+                $colwidth = is_array($attrs['colwidth'] ?? null) ? $attrs['colwidth'] : [];
+
+                for ($index = 0; $index < $colspan; $index++) {
+                    $width = (int) ($colwidth[$index] ?? 0);
+
+                    if ($width > 0) {
+                        $widths[$columnIndex + $index] = $width;
+                    }
+                }
+
+                $columnIndex += $colspan;
+            }
+        }
+
+        ksort($widths);
+
+        return $widths;
+    }
+
+    /**
+     * @param  array<int, int>  $widths
+     */
+    private function applyWidthsToTableElement(DOMXPath $xpath, DOMElement $table, array $widths): void
+    {
+        if ($widths === []) {
+            return;
+        }
+
+        $rows = $xpath->query('.//tr', $table);
+
+        if ($rows === false) {
+            return;
+        }
+
+        foreach ($rows as $row) {
+            if (! $row instanceof DOMElement) {
+                continue;
+            }
+
+            $cells = $xpath->query('./th|./td', $row);
+
+            if ($cells === false) {
+                continue;
+            }
+
+            $columnIndex = 0;
+
+            foreach ($cells as $cell) {
+                if (! $cell instanceof DOMElement) {
+                    continue;
+                }
+
+                $colspan = max(1, (int) ($cell->getAttribute('colspan') ?: 1));
+                $cellWidth = $this->sumTableColumnWidths($widths, $columnIndex, $colspan);
+
+                if ($cellWidth > 0) {
+                    $this->mergeStyleAttribute($cell, [
+                        'width' => $cellWidth.'px',
+                        'min-width' => $cellWidth.'px',
+                    ]);
+                }
+
+                $columnIndex += $colspan;
+            }
+        }
+    }
+
+    /**
+     * @param  array<int, int>  $widths
+     */
+    private function sumTableColumnWidths(array $widths, int $columnIndex, int $colspan): int
+    {
+        $width = 0;
+
+        for ($index = 0; $index < $colspan; $index++) {
+            $width += $widths[$columnIndex + $index] ?? 0;
+        }
+
+        return $width;
+    }
+
+    /**
+     * @param  array<string, string>  $styles
+     */
+    private function mergeStyleAttribute(DOMElement $element, array $styles): void
+    {
+        $existingStyles = collect(explode(';', $element->getAttribute('style')))
+            ->mapWithKeys(function (string $style): array {
+                [$property, $value] = array_pad(explode(':', $style, 2), 2, null);
+
+                if ($property === null || $value === null || trim($property) === '') {
+                    return [];
+                }
+
+                return [trim($property) => trim($value)];
+            })
+            ->all();
+
+        $mergedStyles = array_merge($existingStyles, $styles);
+
+        $style = collect($mergedStyles)
+            ->map(fn (string $value, string $property): string => $property.': '.$value)
+            ->implode('; ');
+
+        $element->setAttribute('style', $style);
     }
 }

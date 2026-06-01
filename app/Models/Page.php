@@ -21,6 +21,7 @@ class Page extends Model
     protected function casts(): array
     {
         return [
+            'content' => 'array',
             'gallery' => 'array',
             'documents' => 'array',
             'is_active' => 'boolean',

@@ -6,6 +6,16 @@ use App\Filament\Resources\PageResource\Pages\CreatePage;
 use App\Filament\Resources\PageResource\Pages\EditPage;
 use App\Filament\Resources\PageResource\Pages\PageTree;
 use App\Models\Page;
+use Awcodes\RicherEditor\Plugins\EmbedPlugin;
+use Awcodes\RicherEditor\Plugins\EmojiPlugin;
+use Awcodes\RicherEditor\Plugins\FullScreenPlugin;
+use Awcodes\RicherEditor\Plugins\IdPlugin;
+use Awcodes\RicherEditor\Plugins\LinkPlugin;
+use Awcodes\RicherEditor\Plugins\SourceCodePlugin;
+use Awcodes\RicherEditor\Tools\HeadingFiveTool;
+use Awcodes\RicherEditor\Tools\HeadingFourTool;
+use Awcodes\RicherEditor\Tools\HeadingSixTool;
+use Awcodes\RicherEditor\Tools\ToolGroup;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -20,6 +30,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
@@ -62,18 +73,18 @@ class PageResource extends Resource
                         )
                         ->rule(fn () => 'not_in:'.implode(',', Page::staticSlugs()))
                         ->helperText('Başlıktan otomatik oluşturulur, düzenlenebilir.'),
-                    Select::make('parent_id')
-                        ->label('Üst Sayfa')
-                        ->relationship(
-                            name: 'parent',
-                            titleAttribute: 'title',
-                            modifyQueryUsing: fn (Builder $query) => $query->whereNotIn('id', Page::staticIds()),
-                            ignoreRecord: true,
-                        )
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->placeholder('Yok'),
+//                    Select::make('parent_id')
+//                        ->label('Üst Sayfa')
+//                        ->relationship(
+//                            name: 'parent',
+//                            titleAttribute: 'title',
+//                            modifyQueryUsing: fn (Builder $query) => $query->whereNotIn('id', Page::staticIds()),
+//                            ignoreRecord: true,
+//                        )
+//                        ->searchable()
+//                        ->preload()
+//                        ->native(false)
+//                        ->placeholder('Yok'),
                     Toggle::make('is_active')
                         ->label('Aktif')
                         ->default(true),
@@ -87,6 +98,38 @@ class PageResource extends Resource
                         ->maxLength(255),
                     RichEditor::make('content')
                         ->label('İçerik')
+                        ->json()
+                        ->plugins([
+                            EmbedPlugin::make(),
+                            EmojiPlugin::make(),
+                            FullScreenPlugin::make(),
+                            IdPlugin::make(),
+                            LinkPlugin::make(),
+                            SourceCodePlugin::make(),
+                        ])
+                        ->tools([
+                            ToolGroup::make('headingTools')
+                                ->label('Başlıklar')
+                                ->icon(Heroicon::H1)
+                                ->displayAsLabel()
+                                ->items([
+                                    'h1',
+                                    'h2',
+                                    'h3',
+                                    HeadingFourTool::make(),
+                                    HeadingFiveTool::make(),
+                                    HeadingSixTool::make(),
+                                ]),
+                        ])
+                        ->toolbarButtons([
+                            ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
+                            ['headingTools'],
+                            ['alignStart', 'alignCenter', 'alignEnd'],
+                            ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
+                            ['table', 'attachFiles', 'embed'],
+                            ['sourceCode', 'fullscreen'],
+                            ['undo', 'redo'],
+                        ])
                         ->extraInputAttributes(['style' => 'min-height: 480px']),
                     FileUpload::make('gallery')
                         ->label('Galeri')
