@@ -26,6 +26,31 @@
         font-weight: 600;
     }
 
+    .prose .embed,
+    .fi-prose .embed {
+        margin-block: 1.5rem;
+        max-width: 100%;
+        overflow: hidden;
+        border-radius: 0.5rem;
+        background-color: var(--color-gray-950);
+    }
+
+    .prose .embed iframe,
+    .fi-prose .embed iframe {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-height: 240px;
+        border: 0;
+        pointer-events: auto !important;
+    }
+
+    .prose .embed iframe.responsive,
+    .fi-prose .embed iframe.responsive {
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+
     .dark .prose table th,
     .dark .prose table td,
     .dark .fi-prose table th,

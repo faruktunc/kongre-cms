@@ -122,6 +122,33 @@ export default function ContentRenderer({ content = [] }) {
                             />
                         );
 
+                    case 'embed':
+                        if (item.html || item.value) {
+                            return (
+                                <div
+                                    key={index}
+                                    className="fi-prose my-6 max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: item.html || item.value }}
+                                />
+                            );
+                        }
+
+                        if (item.src) {
+                            return (
+                                <div key={index} className="embed my-6">
+                                    <iframe
+                                        className="responsive"
+                                        src={item.src}
+                                        title={item.title || 'Embedded content'}
+                                        allow={item.allow || 'autoplay; fullscreen; picture-in-picture'}
+                                        allowFullScreen
+                                    />
+                                </div>
+                            );
+                        }
+
+                        return null;
+
                     // Ayırıcı
                     case 'divider':
                         return (
