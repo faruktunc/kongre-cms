@@ -64,6 +64,14 @@ class Page extends Model
             'isActive' => true,
         ],
         [
+            'id' => 1006,
+            'name' => 'Duyurular',
+            'slug' => 'duyurular',
+            'parentId' => 0,
+            'order' => 45,
+            'isActive' => true,
+        ],
+        [
             'id' => 1005,
             'name' => 'İletişim',
             'slug' => 'iletisim',

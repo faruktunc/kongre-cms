@@ -10,6 +10,10 @@ class PageSeeder extends Seeder
     public function run(): void
     {
         foreach (Page::staticPages() as $staticPage) {
+            if (($staticPage['slug'] ?? null) === 'duyurular') {
+                continue;
+            }
+
             Page::query()->updateOrCreate(
                 ['slug' => $staticPage['slug'] ?? null],
                 [

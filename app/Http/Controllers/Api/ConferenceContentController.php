@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreContactMessageRequest;
+use App\Models\Announcement;
 use App\Models\Board;
 use App\Models\ContactMessage;
 use App\Models\Event;
@@ -28,20 +29,25 @@ class ConferenceContentController extends Controller
 {
     public function menus(): JsonResponse
     {
-        $dynamicLinks = Page::query()
+        $databaseLinks = Page::query()
             ->active()
             ->orderBy('order')
+            ->orderBy('id')
             ->get()
-            ->filter(fn (Page $page): bool => ! $page->isStaticPage())
             ->map(fn (Page $page): array => $this->pageToLegacy($page))
             ->values()
-            ->all();
+            ->collect();
 
-        $links = collect(Page::staticPages())
-            ->map(fn (array $page): array => array_merge($page, [
-                'url' => isset($page['slug']) ? '/'.ltrim((string) $page['slug'], '/') : null,
-            ]))
-            ->merge($dynamicLinks)
+        $databaseIds = $databaseLinks->pluck('id');
+        $databaseSlugs = $databaseLinks->pluck('slug')->filter();
+
+        $fallbackStaticLinks = collect(Page::staticPages())
+            ->reject(fn (array $page): bool => $databaseIds->contains($page['id'] ?? null)
+                || $databaseSlugs->contains($page['slug'] ?? null))
+            ->map(fn (array $page): array => $this->staticPageToLegacy($page));
+
+        $links = $databaseLinks
+            ->merge($fallbackStaticLinks)
             ->unique(fn (array $item): string => (string) ($item['slug'] ?? $item['url'] ?? $item['id']))
             ->sortBy('order')
             ->values()
@@ -203,6 +209,44 @@ class ConferenceContentController extends Controller
         })->values()->all());
     }
 
+    public function announcements(): JsonResponse
+    {
+        $paginator = Announcement::query()
+            ->active()
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $paginator
+                ->getCollection()
+                ->map(fn (Announcement $row): array => $this->announcementToLegacy($row))
+                ->values()
+                ->all(),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'from' => $paginator->firstItem(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'to' => $paginator->lastItem(),
+                'total' => $paginator->total(),
+            ],
+            'links' => [
+                'first' => $paginator->url(1),
+                'last' => $paginator->url($paginator->lastPage()),
+                'prev' => $paginator->previousPageUrl(),
+                'next' => $paginator->nextPageUrl(),
+            ],
+        ]);
+    }
+
+    public function announcement(Announcement $announcement): JsonResponse
+    {
+        abort_unless($announcement->is_active, 404);
+
+        return response()->json($this->announcementToLegacy($announcement));
+    }
+
     public function contact(): JsonResponse
     {
         $event = Event::query()->active()->orderBy('order')->first();
@@ -285,19 +329,6 @@ class ConferenceContentController extends Controller
         ]);
 
         return response()->noContent();
-    }
-
-    public function boards(): JsonResponse
-    {
-        $rows = Board::query()->active()->orderBy('order')->get();
-
-        return response()->json($rows->map(fn (Board $row): array => [
-            'id' => $row->id,
-            'name' => $row->name,
-            'icon' => $row->icon,
-            'members' => $this->normalizeArray($row->members),
-            'isActive' => $row->is_active,
-        ])->values()->all());
     }
 
     public function aboutConference(): JsonResponse
@@ -420,7 +451,7 @@ class ConferenceContentController extends Controller
             ->values()
             ->all();
 
-        return [
+        $legacyPage = [
             'id' => $page->id,
             'name' => $page->title,
             'title' => $page->title,
@@ -433,6 +464,141 @@ class ConferenceContentController extends Controller
             'parentId' => $page->parent_id ?? 0,
             'order' => $page->order,
             'isActive' => $page->is_active,
+        ];
+
+        if ($page->slug === 'kurullar') {
+            $legacyPage['url'] = null;
+            $legacyPage['menuType'] = 'boards';
+            $legacyPage['boards'] = $this->activeBoards();
+        }
+
+        return $legacyPage;
+    }
+
+    /**
+     * @param  array{id?: int, name?: string, slug?: string, parentId?: int, order?: int, isActive?: bool}  $page
+     * @return array{id: int|null, name: string|null, title: string|null, subtitle: null, content: null, gallery: array<int, string>, documents: array<int, array<string, string>>, slug: string|null, url: string|null, parentId: int, order: int, isActive: bool}
+     */
+    private function staticPageToLegacy(array $page): array
+    {
+        $slug = isset($page['slug']) ? (string) $page['slug'] : null;
+        $title = isset($page['name']) ? (string) $page['name'] : null;
+
+        $legacyPage = [
+            'id' => $page['id'] ?? null,
+            'name' => $title,
+            'title' => $title,
+            'subtitle' => null,
+            'content' => null,
+            'gallery' => [],
+            'documents' => [],
+            'slug' => $slug,
+            'url' => $slug !== null ? '/'.ltrim($slug, '/') : null,
+            'parentId' => $page['parentId'] ?? 0,
+            'order' => $page['order'] ?? 0,
+            'isActive' => $page['isActive'] ?? true,
+        ];
+
+        if ($slug === 'kurullar') {
+            $legacyPage['url'] = null;
+            $legacyPage['menuType'] = 'boards';
+            $legacyPage['boards'] = $this->activeBoards();
+        }
+
+        return $legacyPage;
+    }
+
+    /**
+     * @return array<int, array{id: int, name: string, icon: string|null, members: array<int, array<string, mixed>>, order: int, isActive: bool}>
+     */
+    private function activeBoards(): array
+    {
+        return Board::query()
+            ->active()
+            ->orderBy('order')
+            ->orderBy('id')
+            ->get()
+            ->map(fn (Board $row): array => $this->boardToLegacy($row))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array{id: int, name: string, icon: string|null, members: array<int, array<string, mixed>>, order: int, isActive: bool}
+     */
+    private function boardToLegacy(Board $row): array
+    {
+        $members = collect($this->normalizeArray($row->members))
+            ->filter(fn (mixed $member): bool => is_array($member))
+            ->sortBy(fn (array $member): int => (int) ($member['order'] ?? 0))
+            ->values()
+            ->all();
+
+        return [
+            'id' => $row->id,
+            'name' => $row->name,
+            'icon' => $row->icon,
+            'members' => $members,
+            'order' => $row->order,
+            'isActive' => $row->is_active,
+        ];
+    }
+
+    private function announcementToLegacy(Announcement $announcement): array
+    {
+        $gallery = collect($this->normalizeArray($announcement->gallery))
+            ->map(fn (mixed $path): ?string => is_string($path) ? $this->assetUrl($path) : null)
+            ->filter(fn (?string $path): bool => is_string($path) && $path !== '')
+            ->values()
+            ->all();
+
+        $documents = collect($this->normalizeArray($announcement->documents))
+            ->map(function (mixed $item, int $index): ?array {
+                if (is_string($item)) {
+                    $url = $this->assetUrl($item);
+
+                    if (! is_string($url) || $url === '') {
+                        return null;
+                    }
+
+                    return [
+                        'display_name' => 'Doküman '.($index + 1),
+                        'url' => $url,
+                    ];
+                }
+
+                if (! is_array($item)) {
+                    return null;
+                }
+
+                $displayName = $item['display_name'] ?? $item['name'] ?? null;
+                $rawPath = $item['file'] ?? $item['url'] ?? null;
+                $url = is_string($rawPath) ? $this->assetUrl($rawPath) : null;
+
+                if (! is_string($url) || $url === '') {
+                    return null;
+                }
+
+                return [
+                    'display_name' => filled($displayName) ? (string) $displayName : 'Doküman '.($index + 1),
+                    'url' => $url,
+                ];
+            })
+            ->filter(fn (?array $item): bool => is_array($item))
+            ->values()
+            ->all();
+
+        return [
+            'id' => $announcement->id,
+            'title' => $announcement->title,
+            'slug' => $announcement->slug,
+            'url' => '/duyurular/'.$announcement->slug,
+            'subtitle' => $announcement->subtitle,
+            'content' => $this->renderRichContent($announcement->content),
+            'gallery' => $gallery,
+            'documents' => $documents,
+            'publishedAt' => $announcement->published_at?->toIso8601String(),
+            'isActive' => $announcement->is_active,
         ];
     }
 

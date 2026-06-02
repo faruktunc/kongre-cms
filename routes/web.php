@@ -14,9 +14,11 @@ Route::get('/iletisim', function () {
     return inertia('contact');
 });
 
-Route::get('/kurullar', function () {
-    return inertia('board');
-});
+Route::get('/duyurular/{announcementSlug}', function (string $announcementSlug) {
+    return inertia('announcement', [
+        'announcementSlug' => $announcementSlug,
+    ]);
+})->name('announcements.show');
 
 Route::get('/{slug}', function ($slug) {
     return inertia('DynamicPage', [

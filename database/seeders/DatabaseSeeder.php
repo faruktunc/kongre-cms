@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ConferenceContentSeeder::class,
             PageSeeder::class,
+            AnnouncementPageSeeder::class,
         ]);
     }
 }

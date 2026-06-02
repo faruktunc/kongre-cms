@@ -12,8 +12,8 @@ const PAGE_COMPONENTS = {
     'konusmacilar': 'AboutSpeakers',
     'speakers': 'AboutSpeakers',
     'kongre-takvimi': 'CongreTakvimiSection',
-    'kurullar': 'BoardSection',
-    'boards': 'BoardSection',
+    'duyurular': 'AnnouncementsSection',
+    'announcements': 'AnnouncementsSection',
     'iletisim': 'contactSection',
     'contact': 'contactSection',
 };

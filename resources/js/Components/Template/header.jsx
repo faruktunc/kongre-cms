@@ -14,6 +14,182 @@ import {
     XMarkIcon,
     ChevronDownIcon,
 } from "@heroicons/react/24/outline";
+import {
+    Award,
+    BarChart,
+    BookOpen,
+    Briefcase,
+    Calendar,
+    FlaskConical,
+    Globe,
+    GraduationCap,
+    Handshake,
+    Heart,
+    Lightbulb,
+    MessageCircle,
+    Mic,
+    Network,
+    Rocket,
+    Star,
+    Target,
+    Trophy,
+    Users,
+    Zap,
+} from "lucide-react";
+
+const boardIconMap = {
+    Users,
+    Star,
+    BookOpen,
+    Award,
+    Lightbulb,
+    Globe,
+    Briefcase,
+    Mic,
+    GraduationCap,
+    Handshake,
+    Zap,
+    Heart,
+    Target,
+    Trophy,
+    FlaskConical,
+    Network,
+    BarChart,
+    Calendar,
+    MessageCircle,
+    Rocket,
+};
+
+function BoardIcon({ icon, className }) {
+    const Icon = boardIconMap[icon] ?? Users;
+
+    return <Icon className={className} />;
+}
+
+function BoardMembersPanel({ board }) {
+    if (!board) {
+        return (
+            <div className="flex min-h-72 items-center justify-center text-sm font-semibold text-gray-500 dark:text-gray-400">
+                Aktif kurul bulunamadı
+            </div>
+        );
+    }
+
+    const members = Array.isArray(board.members) ? board.members : [];
+
+    return (
+        <div className="h-full p-10">
+            <div className="min-w-0">
+                <div className="mb-4 flex items-center justify-between gap-4">
+                    <h4 className="text-sm font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        Üyeler
+                    </h4>
+                </div>
+
+                {members.length > 0 ? (
+                    <div className="grid max-h-80 grid-cols-1 gap-3 overflow-y-auto pr-2 xl:grid-cols-2">
+                        {members.map((member, index) => (
+                            <div
+                                key={`${member.name ?? "member"}-${index}`}
+                                className="rounded-md border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900"
+                            >
+                                <p className="font-bold text-gray-950 dark:text-white">
+                                    {member.name}
+                                </p>
+                                {member.title ? (
+                                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                        {member.title}
+                                    </p>
+                                ) : null}
+                                {member.institution ? (
+                                    <p className="mt-1 text-xs font-medium text-gray-500 dark:text-gray-400">
+                                        {member.institution}
+                                    </p>
+                                ) : null}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="rounded-md border border-dashed border-gray-300 bg-gray-50 px-4 py-8 text-center text-sm font-semibold text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
+                        Bu kurul için üye girilmemiş
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function BoardsMegaMenu({ parent, classNames }) {
+    const boards = Array.isArray(parent.boards) ? parent.boards : [];
+    const [activeBoardId, setActiveBoardId] = useState(boards[0]?.id ?? null);
+    const activeBoard = boards.find((board) => board.id === activeBoardId) ?? boards[0];
+
+    return (
+        <Menu as="div" key={parent.id} className="relative">
+            {({ open: menuOpen }) => (
+                <>
+                    <MenuButton
+                        className={classNames(
+                            "flex items-center gap-2 px-4 lg:px-4 xl:px-5 py-3 font-semibold text-base lg:text-base xl:text-lg whitespace-nowrap transition-colors duration-200",
+                            menuOpen
+                                ? "bg-red-600 text-white"
+                                : "rounded-lg text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                        )}
+                    >
+                        {parent.name}
+                        <ChevronDownIcon
+                            className={classNames(
+                                "h-5 w-5 transition-transform duration-300",
+                                menuOpen ? "rotate-180" : ""
+                            )}
+                        />
+                    </MenuButton>
+
+                    <MenuItems className="fixed left-0 right-0 top-20 z-50 h-[420px] overflow-hidden border-t border-gray-200 bg-white shadow-xl outline-none dark:border-gray-700 dark:bg-gray-950 sm:top-24 lg:top-28">
+                        <div className="grid h-full grid-cols-[292px_380px_minmax(0,1fr)]">
+                            <div className="flex items-center justify-center bg-red-600 px-8">
+                                <span className="text-3xl font-extrabold uppercase tracking-wide text-white">
+                                    {parent.name}
+                                </span>
+                            </div>
+
+                            <div className="bg-gray-50 dark:bg-gray-900">
+                                {boards.length > 0 ? (
+                                    boards.map((board) => {
+                                        const isActive = board.id === activeBoard?.id;
+
+                                        return (
+                                            <button
+                                                key={board.id}
+                                                type="button"
+                                                onClick={() => setActiveBoardId(board.id)}
+                                                className={classNames(
+                                                    "flex h-16 w-full items-center gap-4 border-l-4 px-6 text-left text-sm font-bold uppercase transition-colors",
+                                                    isActive
+                                                        ? "border-red-600 bg-white text-red-600 dark:bg-gray-950"
+                                                        : "border-transparent text-gray-800 hover:bg-white hover:text-red-600 dark:text-gray-200 dark:hover:bg-gray-950"
+                                                )}
+                                            >
+                                                <BoardIcon icon={board.icon} className="h-5 w-5 shrink-0" />
+                                                <span className="truncate">{board.name}</span>
+                                            </button>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="px-6 py-8 text-sm font-semibold text-gray-500 dark:text-gray-400">
+                                        Aktif kurul bulunamadı
+                                    </div>
+                                )}
+                            </div>
+
+                            <BoardMembersPanel board={activeBoard} />
+                        </div>
+                    </MenuItems>
+                </>
+            )}
+        </Menu>
+    );
+}
 
 export default function Header() {
     const [menuItems, setMenuItems] = useState([]);
@@ -46,6 +222,7 @@ export default function Header() {
         return parentId <= 0;
     };
     const getMenuHref = (item) => item?.url ?? "#";
+    const isBoardsMenu = (item) => item?.menuType === "boards";
 
     const parentMenus = menuItems
         .filter((item) => isTopLevelMenu(item))
@@ -92,6 +269,16 @@ export default function Header() {
                                 {/* Masaüstü Menü - Tek Satır */}
                                 <div className="hidden lg:flex ml-auto items-center justify-end gap-0.5 xl:gap-1 flex-wrap min-w-0 max-w-full overflow-visible">
                                     {parentMenus.map((parent) => {
+                                        if (isBoardsMenu(parent)) {
+                                            return (
+                                                <BoardsMegaMenu
+                                                    key={parent.slug ?? parent.id}
+                                                    parent={parent}
+                                                    classNames={classNames}
+                                                />
+                                            );
+                                        }
+
                                         const subMenus = getSubMenus(parent.id);
                                         if (subMenus.length > 0) {
                                             return (
@@ -180,6 +367,87 @@ export default function Header() {
                         <DisclosurePanel className="lg:hidden bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
                             <div className="px-2 py-2 space-y-1">
                                 {parentMenus.map((parent) => {
+                                    if (isBoardsMenu(parent)) {
+                                        const boards = Array.isArray(parent.boards) ? parent.boards : [];
+
+                                        return (
+                                            <Disclosure
+                                                key={parent.slug ?? parent.id}
+                                                as="div"
+                                            >
+                                                {({ open: subOpen }) => (
+                                                    <>
+                                                        <DisclosureButton className="flex w-full justify-between items-center rounded-md px-5 py-4 text-lg font-semibold text-gray-800 transition-colors duration-150 hover:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-800">
+                                                            <span>
+                                                                {parent.name}
+                                                            </span>
+                                                            <ChevronDownIcon
+                                                                className={classNames(
+                                                                    "h-7 w-7 transition-transform duration-300",
+                                                                    subOpen
+                                                                        ? "rotate-180"
+                                                                        : ""
+                                                                )}
+                                                            />
+                                                        </DisclosureButton>
+                                                        <DisclosurePanel className="mt-1 space-y-3 px-3 pb-4">
+                                                            {boards.length > 0 ? (
+                                                                boards.map((board) => {
+                                                                    const members = Array.isArray(board.members) ? board.members : [];
+
+                                                                    return (
+                                                                        <div
+                                                                            key={board.id}
+                                                                            className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-950"
+                                                                        >
+                                                                            <div className="flex items-center gap-3">
+                                                                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-red-600 text-white">
+                                                                                    <BoardIcon icon={board.icon} className="h-6 w-6" />
+                                                                                </div>
+                                                                                <div className="min-w-0">
+                                                                                    <p className="truncate font-bold text-gray-950 dark:text-white">
+                                                                                        {board.name}
+                                                                                    </p>
+                                                                                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                                                                        {members.length} üye
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            {members.length > 0 ? (
+                                                                                <div className="mt-4 space-y-2">
+                                                                                    {members.map((member, index) => (
+                                                                                        <div
+                                                                                            key={`${member.name ?? "member"}-${index}`}
+                                                                                            className="rounded-md bg-gray-50 px-3 py-2 dark:bg-gray-900"
+                                                                                        >
+                                                                                            <p className="font-semibold text-gray-900 dark:text-white">
+                                                                                                {member.name}
+                                                                                            </p>
+                                                                                            {member.title ? (
+                                                                                                <p className="text-sm text-gray-600 dark:text-gray-300">
+                                                                                                    {member.title}
+                                                                                                </p>
+                                                                                            ) : null}
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            ) : null}
+                                                                        </div>
+                                                                    );
+                                                                })
+                                                            ) : (
+                                                                <p className="px-2 py-3 text-sm font-semibold text-gray-500 dark:text-gray-400">
+                                                                    Aktif kurul bulunamadı
+                                                                </p>
+                                                            )}
+                                                        </DisclosurePanel>
+                                                    </>
+                                                )}
+                                            </Disclosure>
+                                        );
+                                    }
+
                                     const subMenus = getSubMenus(parent.id);
                                     if (subMenus.length > 0) {
                                         return (
