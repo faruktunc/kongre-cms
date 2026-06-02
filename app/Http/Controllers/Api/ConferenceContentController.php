@@ -313,7 +313,10 @@ class ConferenceContentController extends Controller
             }
         }
 
-        return response()->json($items);
+        return response()->json([
+            'items' => $items,
+            'turnstileSiteKey' => config('services.turnstile.key'),
+        ]);
     }
 
     public function storeContactMessage(StoreContactMessageRequest $request): Response

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
+use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 class StoreContactMessageRequest extends FormRequest
 {
@@ -23,6 +24,15 @@ class StoreContactMessageRequest extends FormRequest
             'message' => ['required', 'string', 'min:10', 'max:5000'],
             'website' => ['prohibited'],
             'form_started_at' => ['required', 'integer', 'min:1'],
+            'cf-turnstile-response' => ['required', new Turnstile],
+        ];
+    }
+
+    /** @return array<string, string> */
+    public function messages(): array
+    {
+        return [
+            'cf-turnstile-response.required' => 'Lütfen güvenlik doğrulamasını tamamlayın.',
         ];
     }
 

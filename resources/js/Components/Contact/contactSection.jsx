@@ -1,9 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Mail, Phone, MapPin, Send, Clock, Globe, Check } from "lucide-react";
 import { getContact, submitContactMessage } from "../../Services/apiClientServices";
 
+const TURNSTILE_SCRIPT_ID = "cloudflare-turnstile-script";
+const TURNSTILE_SCRIPT_SRC =
+    "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+const loadTurnstileScript = () => {
+    if (window.turnstile) {
+        return Promise.resolve();
+    }
+
+    const existingScript = document.getElementById(TURNSTILE_SCRIPT_ID);
+
+    if (existingScript) {
+        return new Promise((resolve, reject) => {
+            existingScript.addEventListener("load", resolve, { once: true });
+            existingScript.addEventListener("error", reject, { once: true });
+        });
+    }
+
+    return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.id = TURNSTILE_SCRIPT_ID;
+        script.src = TURNSTILE_SCRIPT_SRC;
+        script.async = true;
+        script.defer = true;
+        script.addEventListener("load", resolve, { once: true });
+        script.addEventListener("error", reject, { once: true });
+
+        document.head.appendChild(script);
+    });
+};
+
 const ContactSection = () => {
     const [contactInfo, setContactInfo] = useState([]);
+    const [turnstileSiteKey, setTurnstileSiteKey] = useState("");
+    const [turnstileToken, setTurnstileToken] = useState("");
+    const turnstileRef = useRef(null);
+    const turnstileWidgetId = useRef(null);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -17,11 +52,83 @@ const ContactSection = () => {
     const [submitError, setSubmitError] = useState("");
 
     useEffect(() => {
-        getContact().then((data) => setContactInfo(data));
+        getContact().then((data) => {
+            setContactInfo(Array.isArray(data) ? data : data?.items ?? []);
+            setTurnstileSiteKey(data?.turnstileSiteKey ?? "");
+        });
     }, []);
+
+    useEffect(() => {
+        if (!turnstileSiteKey || !turnstileRef.current) {
+            return undefined;
+        }
+
+        let isMounted = true;
+
+        loadTurnstileScript()
+            .then(() => {
+                if (
+                    !isMounted ||
+                    !window.turnstile ||
+                    !turnstileRef.current ||
+                    turnstileWidgetId.current !== null
+                ) {
+                    return;
+                }
+
+                turnstileWidgetId.current = window.turnstile.render(
+                    turnstileRef.current,
+                    {
+                        sitekey: turnstileSiteKey,
+                        theme: "auto",
+                        callback: (token) => {
+                            setTurnstileToken(token);
+                            setSubmitError("");
+                        },
+                        "expired-callback": () => setTurnstileToken(""),
+                        "timeout-callback": () => setTurnstileToken(""),
+                        "error-callback": () => {
+                            setTurnstileToken("");
+                            setSubmitError(
+                                "Güvenlik doğrulaması başarısız oldu. Lütfen tekrar deneyin."
+                            );
+                        },
+                    }
+                );
+            })
+            .catch(() => {
+                if (isMounted) {
+                    setSubmitError(
+                        "Güvenlik doğrulaması yüklenemedi. Lütfen tekrar deneyin."
+                    );
+                }
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [turnstileSiteKey]);
+
+    const resetTurnstile = () => {
+        setTurnstileToken("");
+
+        if (window.turnstile && turnstileWidgetId.current !== null) {
+            window.turnstile.reset(turnstileWidgetId.current);
+        }
+    };
 
     const handleSubmit = async () => {
         if (isSubmitting) {
+            return;
+        }
+
+        if (!turnstileSiteKey) {
+            setSubmitError("Güvenlik doğrulaması yapılandırılmamış.");
+            return;
+        }
+
+        if (!turnstileToken) {
+            setSubmitError("Lütfen güvenlik doğrulamasını tamamlayın.");
             return;
         }
 
@@ -29,7 +136,10 @@ const ContactSection = () => {
         setIsSubmitting(true);
 
         try {
-            await submitContactMessage(formData);
+            await submitContactMessage({
+                ...formData,
+                "cf-turnstile-response": turnstileToken,
+            });
             setIsSubmitted(true);
             setTimeout(() => setIsSubmitted(false), 3000);
             setFormData({
@@ -40,6 +150,7 @@ const ContactSection = () => {
                 website: "",
                 form_started_at: Math.floor(Date.now() / 1000),
             });
+            resetTurnstile();
         } catch (error) {
             const firstValidationError = Object.values(
                 error?.response?.data?.errors ?? {}
@@ -54,6 +165,7 @@ const ContactSection = () => {
                       ? backendMessage
                     : "Mesaj gönderilemedi. Lütfen tekrar deneyin."
             );
+            resetTurnstile();
         } finally {
             setIsSubmitting(false);
         }
@@ -272,6 +384,15 @@ const ContactSection = () => {
                                         className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 resize-none"
                                         placeholder="Mesajınızı buraya yazın..."
                                     />
+                                </div>
+                                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900">
+                                    {turnstileSiteKey ? (
+                                        <div ref={turnstileRef} />
+                                    ) : (
+                                        <p className="text-sm text-red-600 dark:text-red-400">
+                                            Güvenlik doğrulaması yapılandırılmamış.
+                                        </p>
+                                    )}
                                 </div>
                                 <button
                                     onClick={handleSubmit}
