@@ -215,7 +215,7 @@ class ConferenceContentController extends Controller
             ->active()
             ->orderByDesc('created_at')
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(5);
 
         return response()->json([
             'data' => $paginator

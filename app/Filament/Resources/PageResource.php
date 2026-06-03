@@ -73,18 +73,18 @@ class PageResource extends Resource
                         )
                         ->rule(fn () => 'not_in:'.implode(',', Page::staticSlugs()))
                         ->helperText('Başlıktan otomatik oluşturulur, düzenlenebilir.'),
-//                    Select::make('parent_id')
-//                        ->label('Üst Sayfa')
-//                        ->relationship(
-//                            name: 'parent',
-//                            titleAttribute: 'title',
-//                            modifyQueryUsing: fn (Builder $query) => $query->whereNotIn('id', Page::staticIds()),
-//                            ignoreRecord: true,
-//                        )
-//                        ->searchable()
-//                        ->preload()
-//                        ->native(false)
-//                        ->placeholder('Yok'),
+                    //                    Select::make('parent_id')
+                    //                        ->label('Üst Sayfa')
+                    //                        ->relationship(
+                    //                            name: 'parent',
+                    //                            titleAttribute: 'title',
+                    //                            modifyQueryUsing: fn (Builder $query) => $query->whereNotIn('id', Page::staticIds()),
+                    //                            ignoreRecord: true,
+                    //                        )
+                    //                        ->searchable()
+                    //                        ->preload()
+                    //                        ->native(false)
+                    //                        ->placeholder('Yok'),
                     Toggle::make('is_active')
                         ->label('Aktif')
                         ->default(true),

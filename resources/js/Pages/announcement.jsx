@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "@inertiajs/react";
 import { ArrowLeft, CalendarDays, FileText } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
@@ -61,9 +60,9 @@ export default function Announcement({ announcementSlug }) {
                         <p className="mb-4 text-lg text-red-600 dark:text-red-400">
                             {error || "Duyuru bulunamadı"}
                         </p>
-                        <Link href="/duyurular" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">
+                        <a href="/#duyurular" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">
                             Duyurulara dön
-                        </Link>
+                        </a>
                     </div>
                 </div>
             </MainLayout>
@@ -74,13 +73,13 @@ export default function Announcement({ announcementSlug }) {
         <MainLayout>
             <main className="min-h-screen bg-gradient-to-r from-gray-50 via-gray-100 to-gray-200 py-12 dark:from-[#101828] dark:via-[#030712] dark:to-[#1E2939]">
                 <article className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                    <Link
-                        href="/duyurular"
+                    <a
+                        href="/#duyurular"
                         className="mb-8 inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm transition hover:text-red-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:text-red-300"
                     >
                         <ArrowLeft className="h-4 w-4" />
                         Duyurular
-                    </Link>
+                    </a>
 
                     <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900 sm:p-8">
                         {publishedAt ? (

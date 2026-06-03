@@ -70,7 +70,7 @@ function BoardMembersPanel({ board }) {
     if (!board) {
         return (
             <div className="flex min-h-72 items-center justify-center text-sm font-semibold text-gray-500 dark:text-gray-400">
-                Aktif kurul bulunamadı
+
             </div>
         );
     }
@@ -80,11 +80,7 @@ function BoardMembersPanel({ board }) {
     return (
         <div className="h-full p-10">
             <div className="min-w-0">
-                <div className="mb-4 flex items-center justify-between gap-4">
-                    <h4 className="text-sm font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                        Üyeler
-                    </h4>
-                </div>
+
 
                 {members.length > 0 ? (
                     <div className="grid max-h-80 grid-cols-1 gap-3 overflow-y-auto pr-2 xl:grid-cols-2">
@@ -121,8 +117,8 @@ function BoardMembersPanel({ board }) {
 
 function BoardsMegaMenu({ parent, classNames }) {
     const boards = Array.isArray(parent.boards) ? parent.boards : [];
-    const [activeBoardId, setActiveBoardId] = useState(boards[0]?.id ?? null);
-    const activeBoard = boards.find((board) => board.id === activeBoardId) ?? boards[0];
+    const [activeBoardId, setActiveBoardId] = useState(null);
+    const activeBoard = boards.find((board) => board.id === activeBoardId) ?? null;
 
     return (
         <Menu as="div" key={parent.id} className="relative">
@@ -177,7 +173,7 @@ function BoardsMegaMenu({ parent, classNames }) {
                                     })
                                 ) : (
                                     <div className="px-6 py-8 text-sm font-semibold text-gray-500 dark:text-gray-400">
-                                        Aktif kurul bulunamadı
+                                        Seçili Kurul Yok
                                     </div>
                                 )}
                             </div>
@@ -293,8 +289,8 @@ export default function Header() {
                                                                 className={classNames(
                                                                     "flex items-center gap-2 px-4 lg:px-4 xl:px-5 py-3 rounded-lg font-semibold text-base lg:text-base xl:text-lg whitespace-nowrap",
                                                                     "text-gray-800 dark:text-gray-200",
-                                                                    menuOpen 
-                                                                        ? "bg-gray-200 dark:bg-gray-700" 
+                                                                    menuOpen
+                                                                        ? "bg-gray-200 dark:bg-gray-700"
                                                                         : "hover:bg-gray-100 dark:hover:bg-gray-800",
                                                                     "transition-colors duration-200"
                                                                 )}
@@ -438,7 +434,7 @@ export default function Header() {
                                                                 })
                                                             ) : (
                                                                 <p className="px-2 py-3 text-sm font-semibold text-gray-500 dark:text-gray-400">
-                                                                    Aktif kurul bulunamadı
+                                                                    Seçili Kurul Yok
                                                                 </p>
                                                             )}
                                                         </DisclosurePanel>
