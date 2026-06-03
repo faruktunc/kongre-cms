@@ -116,10 +116,10 @@ export default function HomeAnnouncementsSection() {
         <section id="duyurular" className="bg-gradient-to-r from-gray-50 via-gray-100 to-gray-200 py-16 dark:bg-gradient-to-r dark:from-[#101828] dark:via-[#030712] dark:to-[#1E2939]">
             <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
                 <div className="mb-10">
-                    <div className="inline-flex items-center gap-2 rounded-md bg-red-50 px-4 py-2 text-sm font-bold text-red-700 dark:bg-red-950/30 dark:text-red-300">
-                        <Megaphone className="h-5 w-5" />
-                        Duyurular
-                    </div>
+                    {/*<div className="inline-flex items-center gap-2 rounded-md bg-red-50 px-4 py-2 text-sm font-bold text-red-700 dark:bg-red-950/30 dark:text-red-300">*/}
+                    {/*    <Megaphone className="h-5 w-5" />*/}
+                    {/*    Duyurular*/}
+                    {/*</div>*/}
                     <h2 className="mt-5 text-4xl font-extrabold text-gray-950 dark:text-white">
                         Duyurular
                     </h2>
