@@ -53,7 +53,7 @@ class Page extends Model
             'slug' => 'kongre-takvimi',
             'parentId' => 0,
             'order' => 30,
-            'isActive' => true,
+            'isActive' => false,
         ],
         [
             'id' => 1004,
