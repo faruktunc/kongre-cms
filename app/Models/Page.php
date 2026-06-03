@@ -69,7 +69,7 @@ class Page extends Model
             'slug' => 'duyurular',
             'parentId' => 0,
             'order' => 45,
-            'isActive' => true,
+            'isActive' => false,
         ],
         [
             'id' => 1005,
