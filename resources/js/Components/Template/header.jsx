@@ -83,7 +83,7 @@ function BoardMembersPanel({ board }) {
 
 
                 {members.length > 0 ? (
-                    <div className="grid max-h-80 grid-cols-1 gap-3 overflow-y-auto pr-2 xl:grid-cols-2">
+                    <div className="grid max-h-80 grid-cols-1 gap-3 overflow-y-auto pr-2">
                         {members.map((member, index) => (
                             <div
                                 key={`${member.name ?? "member"}-${index}`}
@@ -149,7 +149,7 @@ function BoardsMegaMenu({ parent, classNames }) {
                                 </span>
                             </div>
 
-                            <div className="bg-gray-50 dark:bg-gray-900">
+                            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900">
                                 {boards.length > 0 ? (
                                     boards.map((board) => {
                                         const isActive = board.id === activeBoard?.id;

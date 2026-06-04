@@ -18,6 +18,21 @@ const iconMap = {
     github: FaGithub,
 };
 
+const getChildOrder = (item) =>
+    Number(item["child-order"] ?? item.childOrder ?? item.order ?? 0);
+
+const getFooterHref = (item, links) => {
+    const firstActiveChild = links
+        .filter(
+            (link) =>
+                Number(link.parentId ?? 0) === Number(item.id) &&
+                link.isActive
+        )
+        .sort((a, b) => getChildOrder(a) - getChildOrder(b))[0];
+
+    return firstActiveChild?.url ?? item.url ?? "#";
+};
+
 export default function Footer() {
     const [footer, setFooter] = useState({ links: [], socials: [] });
     const [logo, setLogo] = useState([]);
@@ -26,15 +41,20 @@ export default function Footer() {
     useEffect(() => {
         getMenus().then((data) => {
             if (data) {
+                const links = data.links ?? data.menus?.links ?? [];
+
                 // link dizisini al, parentId'si 0 olanları filtrele
-                const filteredLinks = (data.links ?? []).filter(
+                const filteredLinks = links.filter(
                     (item) => Number(item.parentId ?? 0) <= 0 && item.isActive
                 );
 
                 // sırala
-                const sortedLinks = [...filteredLinks].sort(
-                    (a, b) => (a.order ?? 0) - (b.order ?? 0)
-                );
+                const sortedLinks = [...filteredLinks]
+                    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                    .map((item) => ({
+                        ...item,
+                        url: getFooterHref(item, links),
+                    }));
 
                 // sosyal medya sıralaması
                 const sortedSocials = [...(data.socials ?? [])].sort(
@@ -42,11 +62,6 @@ export default function Footer() {
                 );
 
                 setFooter({
-                    links: sortedLinks,
-                    socials: sortedSocials,
-                });
-
-                console.log("Footer Data:", {
                     links: sortedLinks,
                     socials: sortedSocials,
                 });
