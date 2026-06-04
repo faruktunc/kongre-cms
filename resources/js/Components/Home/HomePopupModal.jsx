@@ -36,6 +36,7 @@ export default function HomePopupModal() {
     );
     const hasTextContent = Boolean(currentTitle || hasMessage);
     const shouldRenderBody = hasTextContent || hasButton || hasMultiplePopups;
+    const isImageOnly = Boolean(currentPopup?.bannerImage && !shouldRenderBody);
 
     const closePopup = () => {
         setIsOpen(false);
@@ -65,7 +66,13 @@ export default function HomePopupModal() {
             aria-labelledby={currentTitle ? "home-popup-title" : undefined}
             aria-label={currentTitle ? undefined : "Ana sayfa duyurusu"}
         >
-            <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-900">
+            <div
+                className={
+                    isImageOnly
+                        ? "relative max-h-[calc(100vh-3rem)] max-w-[calc(100vw-2rem)]"
+                        : "relative w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+                }
+            >
                 <button
                     type="button"
                     onClick={closePopup}
@@ -79,9 +86,13 @@ export default function HomePopupModal() {
                     <img
                         src={currentPopup.bannerImage}
                         alt={currentTitle || "Pop-up afişi"}
-                        className={`w-full object-contain bg-gray-100 dark:bg-gray-950 ${
-                            shouldRenderBody ? "max-h-[52vh]" : "max-h-[82vh]"
-                        }`}
+                        className={
+                            isImageOnly
+                                ? "max-h-[calc(100vh-3rem)] max-w-[calc(100vw-2rem)] object-contain"
+                                : `w-full bg-gray-100 object-contain dark:bg-gray-950 ${
+                                      shouldRenderBody ? "max-h-[52vh]" : "max-h-[82vh]"
+                                  }`
+                        }
                     />
                 )}
 
