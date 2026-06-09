@@ -175,7 +175,7 @@ class ConferenceContentController extends Controller
             $payload['photo'] = $this->assetUrl($row->photo ?? ($payload['photo'] ?? null));
             $payload['expertise'] = $this->normalizeArray($payload['expertise'] ?? $row->expertise);
 
-            return array_merge($fallback, $payload);
+            return array_merge($payload, $fallback);
         })->values()->all());
     }
 
@@ -341,6 +341,18 @@ class ConferenceContentController extends Controller
         $conferenceInfo = $payload['conference_info'] ?? [];
 
         return response()->json(is_array($conferenceInfo) ? $conferenceInfo : []);
+    }
+
+    public function boards(): JsonResponse
+    {
+        return response()->json($this->activeBoards());
+    }
+
+    public function board(Board $board): JsonResponse
+    {
+        abort_unless($board->is_active, 404);
+
+        return response()->json($this->boardToLegacy($board));
     }
 
     public function homePopups(): JsonResponse
@@ -540,6 +552,8 @@ class ConferenceContentController extends Controller
         return [
             'id' => $row->id,
             'name' => $row->name,
+            'slug' => $row->slug,
+            'url' => '/kurullar/'.$row->slug,
             'icon' => $row->icon,
             'members' => $members,
             'order' => $row->order,

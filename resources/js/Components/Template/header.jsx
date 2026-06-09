@@ -66,59 +66,9 @@ function BoardIcon({ icon, className }) {
     return <Icon className={className} />;
 }
 
-function BoardMembersPanel({ board }) {
-    if (!board) {
-        return (
-            <div className="flex min-h-72 items-center justify-center text-sm font-semibold text-gray-500 dark:text-gray-400">
-
-            </div>
-        );
-    }
-
-    const members = Array.isArray(board.members) ? board.members : [];
-
-    return (
-        <div className="h-full p-10">
-            <div className="min-w-0">
-
-
-                {members.length > 0 ? (
-                    <div className="grid max-h-80 grid-cols-1 gap-3 overflow-y-auto pr-2">
-                        {members.map((member, index) => (
-                            <div
-                                key={`${member.name ?? "member"}-${index}`}
-                                className="rounded-md border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900"
-                            >
-                                <p className="font-bold text-gray-950 dark:text-white">
-                                    {member.name}
-                                </p>
-                                {member.title ? (
-                                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                                        {member.title}
-                                    </p>
-                                ) : null}
-                                {member.institution ? (
-                                    <p className="mt-1 text-xs font-medium text-gray-500 dark:text-gray-400">
-                                        {member.institution}
-                                    </p>
-                                ) : null}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="rounded-md border border-dashed border-gray-300 bg-gray-50 px-4 py-8 text-center text-sm font-semibold text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
-                        Bu kurul için üye girilmemiş
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-}
 
 function BoardsMegaMenu({ parent, classNames }) {
     const boards = Array.isArray(parent.boards) ? parent.boards : [];
-    const [activeBoardId, setActiveBoardId] = useState(null);
-    const activeBoard = boards.find((board) => board.id === activeBoardId) ?? null;
 
     return (
         <Menu as="div" key={parent.id} className="relative">
@@ -141,44 +91,35 @@ function BoardsMegaMenu({ parent, classNames }) {
                         />
                     </MenuButton>
 
-                    <MenuItems className="fixed left-0 right-0 top-20 z-50 h-[420px] overflow-hidden border-t border-gray-200 bg-white shadow-xl outline-none dark:border-gray-700 dark:bg-gray-950 sm:top-24 lg:top-28">
-                        <div className="grid h-full grid-cols-[292px_380px_minmax(0,1fr)]">
-                            <div className="flex items-center justify-center bg-red-600 px-8">
+                    <MenuItems className="fixed left-0 right-0 top-20 z-50 overflow-hidden border-t border-gray-200 bg-white shadow-xl outline-none dark:border-gray-700 dark:bg-gray-950 sm:top-24 lg:top-28">
+                        <div className="grid h-full grid-cols-[220px_minmax(0,1fr)]">
+                            <div className="flex items-center justify-center bg-red-600 px-8 py-10">
                                 <span className="text-3xl font-extrabold uppercase tracking-wide text-white">
                                     {parent.name}
                                 </span>
                             </div>
 
-                            <div className="overflow-y-auto bg-gray-50 dark:bg-gray-900">
+                            <div className="overflow-y-auto max-h-[420px] p-6">
                                 {boards.length > 0 ? (
-                                    boards.map((board) => {
-                                        const isActive = board.id === activeBoard?.id;
-
-                                        return (
-                                            <button
-                                                key={board.id}
-                                                type="button"
-                                                onClick={() => setActiveBoardId(board.id)}
-                                                className={classNames(
-                                                    "flex h-16 w-full items-center gap-4 border-l-4 px-6 text-left text-sm font-bold uppercase transition-colors",
-                                                    isActive
-                                                        ? "border-red-600 bg-white text-red-600 dark:bg-gray-950"
-                                                        : "border-transparent text-gray-800 hover:bg-white hover:text-red-600 dark:text-gray-200 dark:hover:bg-gray-950"
-                                                )}
-                                            >
-                                                <BoardIcon icon={board.icon} className="h-5 w-5 shrink-0" />
-                                                <span className="truncate">{board.name}</span>
-                                            </button>
-                                        );
-                                    })
+                                    <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
+                                        {boards.map((board) => (
+                                            <MenuItem key={board.id}>
+                                                <a
+                                                    href={board.url}
+                                                    className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-bold text-gray-800 transition hover:border-red-200 hover:bg-white hover:text-red-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-red-800 dark:hover:bg-gray-950 dark:hover:text-red-400"
+                                                >
+                                                    <BoardIcon icon={board.icon} className="h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
+                                                    <span className="truncate">{board.name}</span>
+                                                </a>
+                                            </MenuItem>
+                                        ))}
+                                    </div>
                                 ) : (
                                     <div className="px-6 py-8 text-sm font-semibold text-gray-500 dark:text-gray-400">
                                         Seçili Kurul Yok
                                     </div>
                                 )}
                             </div>
-
-                            <BoardMembersPanel board={activeBoard} />
                         </div>
                     </MenuItems>
                 </>
@@ -386,52 +327,18 @@ export default function Header() {
                                                                 )}
                                                             />
                                                         </DisclosureButton>
-                                                        <DisclosurePanel className="mt-1 space-y-3 px-3 pb-4">
+                                                        <DisclosurePanel className="mt-1 space-y-1 px-3 pb-4">
                                                             {boards.length > 0 ? (
-                                                                boards.map((board) => {
-                                                                    const members = Array.isArray(board.members) ? board.members : [];
-
-                                                                    return (
-                                                                        <div
-                                                                            key={board.id}
-                                                                            className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-950"
-                                                                        >
-                                                                            <div className="flex items-center gap-3">
-                                                                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-red-600 text-white">
-                                                                                    <BoardIcon icon={board.icon} className="h-6 w-6" />
-                                                                                </div>
-                                                                                <div className="min-w-0">
-                                                                                    <p className="truncate font-bold text-gray-950 dark:text-white">
-                                                                                        {board.name}
-                                                                                    </p>
-                                                                                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                                                                        {members.length} üye
-                                                                                    </p>
-                                                                                </div>
-                                                                            </div>
-
-                                                                            {members.length > 0 ? (
-                                                                                <div className="mt-4 space-y-2">
-                                                                                    {members.map((member, index) => (
-                                                                                        <div
-                                                                                            key={`${member.name ?? "member"}-${index}`}
-                                                                                            className="rounded-md bg-gray-50 px-3 py-2 dark:bg-gray-900"
-                                                                                        >
-                                                                                            <p className="font-semibold text-gray-900 dark:text-white">
-                                                                                                {member.name}
-                                                                                            </p>
-                                                                                            {member.title ? (
-                                                                                                <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                                                                    {member.title}
-                                                                                                </p>
-                                                                                            ) : null}
-                                                                                        </div>
-                                                                                    ))}
-                                                                                </div>
-                                                                            ) : null}
-                                                                        </div>
-                                                                    );
-                                                                })
+                                                                boards.map((board) => (
+                                                                    <a
+                                                                        key={board.id}
+                                                                        href={board.url}
+                                                                        className="flex items-center gap-3 rounded-md px-4 py-3 text-base font-semibold text-gray-700 transition hover:bg-red-50 hover:text-red-700 dark:text-gray-300 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+                                                                    >
+                                                                        <BoardIcon icon={board.icon} className="h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
+                                                                        {board.name}
+                                                                    </a>
+                                                                ))
                                                             ) : (
                                                                 <p className="px-2 py-3 text-sm font-semibold text-gray-500 dark:text-gray-400">
                                                                     Seçili Kurul Yok

@@ -64,8 +64,8 @@ class SpeakerResource extends Resource
                         ->rows(6)
                         ->columnSpan(2),
                     Repeater::make('expertise')
-                        ->label('Uzmanlık Alanları')
-                        ->simple(TextInput::make('value')->label('Uzmanlık')->required())
+                        ->label('Konu')
+                        ->simple(TextInput::make('value')->label('Konu')->required())
                         ->default([])
                         ->columnSpanFull(),
                     TextInput::make('order')

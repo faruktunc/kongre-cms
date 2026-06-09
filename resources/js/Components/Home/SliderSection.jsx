@@ -147,11 +147,7 @@ export default function SliderSection() {
                                                 return (
                                                     <span
                                                         key={i}
-                                                        className={
-                                                            isHighlight
-                                                                ? "text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-600"
-                                                                : "[text-shadow:0_1px_0_#fff,0_-1px_0_#fff,1px_0_0_#fff,-1px_0_0_#fff,0_0_12px_rgba(255,255,255,0.35)]"
-                                                        }
+                                                        className="[text-shadow:0_1px_0_#fff,0_-1px_0_#fff,1px_0_0_#fff,-1px_0_0_#fff,0_0_12px_rgba(255,255,255,0.35)]"
                                                     >
                                                         {word}{" "}
                                                     </span>
@@ -162,9 +158,9 @@ export default function SliderSection() {
                                         {event.description}
                                     </p>
                                     <div className="flex items-center space-x-6 mb-8">
-                                        <div className="flex items-center text-gray-100">
-                                            <Calendar className="w-6 h-6 mr-2 text-red-600" />
-                                            <span className="font-bold text-2xl md:text-3xl text-red-600 text-shadow-lg/60">
+                                        <div className="flex items-center text-gray-900">
+                                            <Calendar className="w-6 h-6 mr-2 [filter:drop-shadow(0_1px_0_#fff)_drop-shadow(0_-1px_0_#fff)_drop-shadow(1px_0_0_#fff)_drop-shadow(-1px_0_0_#fff)]" />
+                                            <span className="font-bold text-2xl md:text-3xl text-gray-900 [text-shadow:0_1px_0_#fff,0_-1px_0_#fff,1px_0_0_#fff,-1px_0_0_#fff,0_0_12px_rgba(255,255,255,0.35)]">
                                                 {formatDate(
                                                     event.date,
                                                     event.end_date

@@ -20,6 +20,12 @@ Route::get('/duyurular/{announcementSlug}', function (string $announcementSlug) 
     ]);
 })->name('announcements.show');
 
+Route::get('/kurullar/{boardSlug}', function (string $boardSlug) {
+    return inertia('board', [
+        'boardSlug' => $boardSlug,
+    ]);
+})->name('boards.show');
+
 Route::get('/{slug}', function ($slug) {
     return inertia('DynamicPage', [
         'pageSlug' => $slug,

@@ -19,6 +19,8 @@ export const getContact = () => api.get("/contact").then(r => r.data);
 export const submitContactMessage = (payload) => api.post("/contact/messages", payload).then(r => r.data);
 export const getAboutConference = () => api.get("/aboutConference").then(r => r.data);
 export const getHomePopups = () => api.get("/home-popups").then(r => r.data);
+export const getBoards = () => api.get("/boards").then(r => r.data);
+export const getBoard = (slug) => api.get(`/boards/${slug}`).then(r => r.data);
 
 export const getPageBySlug = (slug) => {
     return api.get("/menus").then(r => {

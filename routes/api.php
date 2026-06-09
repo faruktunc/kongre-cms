@@ -16,4 +16,6 @@ Route::controller(ConferenceContentController::class)->group(function () {
     Route::post('/contact/messages', 'storeContactMessage')->middleware('throttle:5,1');
     Route::get('/aboutConference', 'aboutConference');
     Route::get('/home-popups', 'homePopups');
+    Route::get('/boards', 'boards');
+    Route::get('/boards/{board:slug}', 'board');
 });

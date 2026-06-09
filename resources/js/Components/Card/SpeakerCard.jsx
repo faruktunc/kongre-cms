@@ -22,7 +22,7 @@ function SpeakerModal({ speaker, onClose }) {
 
             {/* Modal */}
             <div
-                className="relative z-10 w-full max-w-3xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col sm:flex-row"
+                className="relative z-10 w-full max-w-4xl bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col sm:flex-row max-h-[90vh] sm:h-[420px] sm:max-h-none overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Kapat */}
@@ -34,17 +34,17 @@ function SpeakerModal({ speaker, onClose }) {
                 </button>
 
                 {/* Sol — Fotoğraf */}
-                <div className="sm:w-64 lg:w-72 shrink-0 relative">
+                <div className="h-56 w-full sm:h-auto sm:w-64 shrink-0 relative">
                     <img
                         src={speaker.photo}
                         alt={speaker.name}
-                        className="w-full h-64 sm:h-full object-cover object-top"
+                        className="w-full h-full object-cover object-[center_20%]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent sm:bg-gradient-to-r sm:from-transparent sm:via-transparent sm:to-black/10" />
                 </div>
 
                 {/* Sağ — İçerik */}
-                <div className="flex-1 p-6 sm:p-8 flex flex-col gap-4 max-h-[70vh] overflow-y-auto">
+                <div className="flex-1 min-w-0 p-6 sm:p-8 flex flex-col gap-4 overflow-y-auto">
                     {/* İsim & Unvan */}
                     <div>
                         <h2 className="text-2xl font-extrabold text-gray-950 dark:text-white leading-tight">
@@ -76,9 +76,11 @@ function SpeakerModal({ speaker, onClose }) {
                         </p>
                     )}
 
-                    {/* Uzmanlık */}
+                    {/* Konu */}
                     {speaker.expertise?.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-auto pt-2">
+                        <div className="mt-auto pt-2">
+                            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">Konu</p>
+                            <div className="flex flex-wrap gap-2">
                             {speaker.expertise.map((exp, i) => (
                                 <span
                                     key={i}
@@ -87,6 +89,7 @@ function SpeakerModal({ speaker, onClose }) {
                                     {exp}
                                 </span>
                             ))}
+                            </div>
                         </div>
                     )}
                 </div>
