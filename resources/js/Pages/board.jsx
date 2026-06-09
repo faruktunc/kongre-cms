@@ -90,18 +90,18 @@ export default function BoardDetail({ boardSlug }) {
                                 <h1 className="text-3xl font-extrabold text-gray-950 dark:text-white sm:text-4xl">
                                     {board.name}
                                 </h1>
-                                <p className="mt-1 text-sm font-semibold text-gray-500 dark:text-gray-400">
-                                    {members.length} Üye
-                                </p>
+                                {/*<p className="mt-1 text-sm font-semibold text-gray-500 dark:text-gray-400">*/}
+                                {/*    {members.length} Üye*/}
+                                {/*</p>*/}
                             </div>
                         </div>
                     </div>
 
                     {members.length > 0 ? (
                         <section className="mt-8">
-                            <h2 className="mb-4 text-2xl font-bold text-gray-950 dark:text-white">
-                                Üyeler
-                            </h2>
+                            {/*<h2 className="mb-4 text-2xl font-bold text-gray-950 dark:text-white">*/}
+                            {/*    Üyeler*/}
+                            {/*</h2>*/}
                             <div className="flex flex-col gap-3">
                                 {members.map((member, index) => (
                                     <div
