@@ -51,10 +51,24 @@ function SpeakerModal({ speaker, onClose }) {
                             {speaker.name}
                         </h2>
                         <div className="flex items-center gap-2 mt-2">
-                            <div className="w-1 h-4 bg-gradient-to-b from-gray-400 to-gray-600 dark:from-gray-300 dark:to-gray-500 rounded-full shrink-0" />
-                            <p className="text-gray-600 dark:text-gray-300 font-semibold text-sm">
-                                {speaker.title}
-                            </p>
+                            {/*<div className="w-1 h-4 bg-gradient-to-b from-gray-400 to-gray-600 dark:from-gray-300 dark:to-gray-500 rounded-full shrink-0" />*/}
+                            {/*<p className="text-gray-600 dark:text-gray-300 font-semibold text-sm">*/}
+                            {/*    {speaker.title}*/}
+                            {/*</p>*/}
+                            {speaker.expertise?.length > 0 && (
+                                <div className="mt-auto">
+                                    <div className="flex flex-wrap gap-2">
+                                        {speaker.expertise.map((exp, i) => (
+                                            <span
+                                                key={i}
+                                                className="text-gray-600 dark:text-gray-300 font-semibold text-lg">
+
+                                    {exp}
+                                </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         {speaker.company && (
                             <div className="flex items-center gap-2 mt-1.5">
@@ -77,21 +91,21 @@ function SpeakerModal({ speaker, onClose }) {
                     )}
 
                     {/* Konu */}
-                    {speaker.expertise?.length > 0 && (
-                        <div className="mt-auto pt-2">
-                            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">Konu</p>
-                            <div className="flex flex-wrap gap-2">
-                            {speaker.expertise.map((exp, i) => (
-                                <span
-                                    key={i}
-                                    className="text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700"
-                                >
-                                    {exp}
-                                </span>
-                            ))}
-                            </div>
-                        </div>
-                    )}
+                    {/*{speaker.expertise?.length > 0 && (*/}
+                    {/*    <div className="mt-auto pt-2">*/}
+                    {/*        <p className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500">Konu</p>*/}
+                    {/*        <div className="flex flex-wrap gap-2">*/}
+                    {/*        {speaker.expertise.map((exp, i) => (*/}
+                    {/*            <span*/}
+                    {/*                key={i}*/}
+                    {/*                className="text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700"*/}
+                    {/*            >*/}
+                    {/*                {exp}*/}
+                    {/*            </span>*/}
+                    {/*        ))}*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
                 </div>
             </div>
         </div>
